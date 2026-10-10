@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Judgement">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Judgement — Card Scoring</title>
+<style>
+:root{--bg:#080b12;--line:#263044;--text:#f5f7fb;--muted:#8e9ab0;--accent:#7c5cff;--green:#19d3ae;--red:#ff5263;--shadow:0 18px 50px rgba(0,0,0,.32)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:radial-gradient(circle at 50% -10%,#1a2140 0,#080b12 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
+button,input{font:inherit}button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:disabled,input:disabled{opacity:.62;cursor:not-allowed}
+.app{max-width:780px;margin:auto;padding:calc(16px + env(safe-area-inset-top)) 14px 38px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.brand{font-size:23px;font-weight:900;letter-spacing:-.6px}.brand span{color:var(--accent)}.badge{font-size:12px;color:var(--muted);background:#121927;border:1px solid var(--line);padding:7px 10px;border-radius:999px;white-space:nowrap}
+.screen{display:none}.screen.active{display:block}.hero{padding:22px 4px 18px}.hero h1{font-size:35px;line-height:1.05;margin:0 0 9px;letter-spacing:-1.4px}.hero p{margin:0;color:var(--muted);line-height:1.5}
+.card{background:linear-gradient(145deg,rgba(22,29,43,.96),rgba(12,17,27,.96));border:1px solid var(--line);border-radius:20px;padding:17px;box-shadow:var(--shadow);margin-bottom:13px}.label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:850;margin-bottom:10px}
+.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.count{background:#0d131f;border:1px solid var(--line);border-radius:14px;color:var(--text);padding:14px 7px;font-weight:850}.count.selected{border-color:var(--accent);background:rgba(124,92,255,.14);box-shadow:0 0 0 1px rgba(124,92,255,.25) inset}
+.names{display:grid;gap:9px}.name-row{display:flex;gap:9px;align-items:center}.num{width:26px;color:var(--muted);font-weight:750;text-align:center}
+input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:12px 13px;outline:none;font-size:16px}input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.12)}
+.primary{width:100%;border:0;border-radius:14px;padding:15px;background:linear-gradient(135deg,#7c5cff,#5b43dc);color:white;font-weight:900;font-size:16px;box-shadow:0 10px 25px rgba(92,67,220,.24)}.secondary{border:1px solid var(--line);background:#121927;color:var(--text);border-radius:12px;padding:11px 12px;font-weight:800}.danger{color:#ff8792;border-color:#54232b;background:#1a1015}.success-btn{border-color:#176b5a;background:#0e2925;color:#6debd0}
+.game-head{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}.round-title{font-size:25px;font-weight:950}.sub{color:var(--muted);font-size:13px;margin-top:4px;line-height:1.45}.trump{display:flex;align-items:center;gap:9px;background:#0b111b;border:1px solid var(--line);padding:9px 11px;border-radius:14px}.suit{font-size:27px;line-height:1}.spade,.club{color:#f4f6fb}.heart,.diamond{color:#ff5263}.trump strong{font-size:13px}.trump small{display:block;color:var(--muted)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:13px}.actions .wide{grid-column:1/-1}.statusline{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;background:#0b111b;border:1px solid var(--line);border-radius:12px;font-size:13px}.statusline strong{color:#dcd4ff}.bid-sum.ok{color:#6debd0}.bid-sum.warn{color:#ff8792}
+.players{display:grid;gap:10px;margin-top:13px}.player{background:#0c121d;border:1px solid var(--line);border-radius:16px;padding:13px}.player-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.pname{font-weight:850;overflow-wrap:anywhere}.round-score{font-size:13px;font-weight:900;white-space:nowrap}.fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field label{display:block;color:var(--muted);font-size:11px;font-weight:850;text-transform:uppercase;margin:0 0 5px 2px}.numinput{text-align:center;font-size:18px;font-weight:850;padding:11px}.result{margin-top:9px;font-size:12px;font-weight:850;padding:8px 9px;border-radius:9px}.success{background:rgba(25,211,174,.1);color:#5ce4c7}.fail{background:rgba(255,82,99,.1);color:#ff8792}.locked-note{font-size:12px;color:#cfc6ff;line-height:1.45;margin-top:10px}
+.leader-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #20283a}.leader-row:last-child{border-bottom:0}.rank{font-weight:900;color:var(--muted)}.leader-name{font-weight:850}.leader-score{font-size:18px;font-weight:900;text-align:right}.leader-meta{color:var(--muted);font-size:11px;margin-top:2px}.total{font-size:12px;color:var(--muted)}
+.notice{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}.hidden{display:none!important}.history-item{border:1px solid var(--line);background:#0b111b;border-radius:14px;padding:13px;margin-top:9px}.history-top{display:flex;justify-content:space-between;gap:8px;align-items:start}.history-title{font-weight:850;overflow-wrap:anywhere}.history-date{font-size:11px;color:var(--muted);margin-top:4px}.history-actions{display:flex;gap:8px;margin-top:10px}.history-actions button{flex:1}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;min-width:520px}th,td{border-bottom:1px solid #283146;padding:9px 8px;text-align:left;white-space:nowrap}th{color:#cfc6ff}
+@media(max-width:480px){.hero h1{font-size:32px}.game-head{grid-template-columns:1fr}.trump{width:max-content}.card{padding:14px}.actions{grid-template-columns:1fr 1fr}.fields{gap:7px}.numinput{padding:10px 5px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="topbar"><div class="brand">JUDGEMENT<span>•</span></div><div class="badge" id="saveStatus">Ready</div></div>
 
+ <section id="setup" class="screen active">
+  <div class="hero"><h1>Ready to deal?</h1><p>Bid first. Freeze the bids and trump. Play the round, then enter actual tricks.</p></div>
+  <div class="card"><div class="label">Game name (optional)</div><input id="gameName" maxlength="60" placeholder="e.g. Sunday Club Game"></div>
+  <div class="card"><div class="label">Players</div><div class="counts"><button class="count" data-count="6" type="button">6 Players</button><button class="count" data-count="7" type="button">7 Players</button><button class="count" data-count="8" type="button">8 Players</button></div></div>
+  <div class="card"><div class="label">Player names</div><div id="nameInputs" class="names"></div><div class="notice">Rounds are based on the maximum cards that fit in a 52-card deck.</div></div>
+  <div class="card"><button id="startBtn" class="primary" type="button">Start New Game</button><div class="actions"><button id="resumeBtn" class="secondary hidden" type="button">Resume Current Game</button><button id="historyBtn" class="secondary" type="button">Game History</button></div><button id="clearCurrentBtn" class="secondary danger hidden" style="width:100%;margin-top:9px" type="button">Discard Current Game</button></div>
+ </section>
+
+ <section id="game" class="screen">
+  <div class="card">
+   <div class="actions" style="margin-top:0;margin-bottom:13px"><button id="backSetup" class="secondary" type="button">← Back to Setup</button><button id="showHistory" class="secondary" type="button">Game History</button></div>
+   <div class="game-head"><div><div class="round-title" id="roundTitle"></div><div class="sub" id="roundSub"></div><div class="sub" id="gameTitleDisplay"></div></div><div class="trump"><div class="suit" id="trumpSuit">♠</div><div><strong id="trumpName">Spade</strong><small id="trumpCard"></small></div></div></div>
+   <div class="actions"><button id="changeTrump" class="secondary" type="button">Change Trump</button><button id="resetRound" class="secondary" type="button">Reset Round</button><button id="freezeBids" class="primary wide" type="button">Freeze Bids &amp; Trump</button></div>
+   <div id="bidStatus" class="statusline"><span>Bid total</span><strong id="bidSum" class="bid-sum">0</strong></div>
+   <div id="freezeNote" class="locked-note">Enter every bid. The total bid must not equal the cards dealt per player. Freeze bids before playing.</div>
+  </div>
+  <div id="players" class="players"></div>
+  <div class="card"><button id="saveRound" class="primary" type="button">Save Actual Scores &amp; Continue</button><div class="notice">Actual scores can be entered only after bids and trump are frozen.</div></div>
+  <div class="card"><div class="label">Leaderboard</div><div id="leaderboard"></div></div>
+ </section>
+
+ <section id="history" class="screen">
+  <div class="hero"><h1>Game history</h1><p>Completed games are saved on this device so you can review them later.</p></div>
+  <div class="card"><button id="historyBack" class="secondary" type="button">← Back</button><div id="historyList" style="margin-top:12px"></div></div>
+ </section>
+
+ <section id="historyDetail" class="screen">
+  <div class="hero"><h1 id="detailTitle">Game details</h1><p id="detailMeta"></p></div>
+  <div class="card"><button id="detailBack" class="secondary" type="button">← Back to History</button><div class="label" style="margin-top:16px">Final leaderboard</div><div id="detailLeaderboard"></div></div>
+  <div class="card"><div class="label">Round-by-round scores</div><div id="roundDetails" class="table-wrap"></div></div>
+ </section>
+
+ <section id="final" class="screen">
+  <div class="hero"><h1>Game complete.</h1><p>All rounds have been scored and this game has been added to history.</p></div>
+  <div class="card"><div class="label">Final leaderboard</div><div id="finalLeaderboard"></div></div>
+  <div class="card"><button id="newGame" class="primary" type="button">Start New Game</button><button id="finalHistory" class="secondary" style="width:100%;margin-top:9px" type="button">View Game History</button></div>
+ </section>
+</div>
+<script>
+(function(){
+'use strict';
+const KEY='judgement_card_game_v2', HISTORY_KEY='judgement_card_history_v2';
+const SUITS=[{name:'Spade',symbol:'♠',cls:'spade'},{name:'Heart',symbol:'♥',cls:'heart'},{name:'Diamond',symbol:'♦',cls:'diamond'},{name:'Club',symbol:'♣',cls:'club'}];
+const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+let state=null, history=[], detailGameId=null;
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');window.scrollTo(0,0)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Save unavailable';alert('Browser storage is unavailable. Please do not close this page until the game is saved.')}}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+function loadHistory(){try{const h=JSON.parse(localStorage.getItem(HISTORY_KEY));return Array.isArray(h)?h:[]}catch(e){return []}}
+function saveHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){alert('Could not save game history. Browser storage may be full.')}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function cardsForPlayerCount(n){return Math.floor(52/n)}
+function makeSchedule(n){const max=cardsForPlayerCount(n),down=[];for(let c=max;c>=1;c--)down.push({cards:c,blind:false,direction:'down'});const blind=[{cards:1,blind:true,direction:'blind'}],up=[];for(let c=1;c<=max;c++)up.push({cards:c,blind:false,direction:'up'});return down.concat(blind,up)}
+function currentRound(){return state.schedule[state.round]}
+function deck(){const d=[];SUITS.forEach((s,si)=>RANKS.forEach((r,ri)=>d.push({suit:si,rank:ri})));return d}
+function shuffled(d){for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
+function randomTrump(){const dealt=state.players.length*currentRound().cards;const d=shuffled(deck());state.trump=d[Math.min(dealt,d.length-1)];}
+function initNames(n){const old=[...$('nameInputs').querySelectorAll('input')].map(x=>x.value);$('nameInputs').innerHTML='';for(let i=0;i<n;i++){const row=document.createElement('div');row.className='name-row';row.innerHTML='<div class="num">'+(i+1)+'</div><input maxlength="22" autocomplete="off" placeholder="Player '+(i+1)+'" aria-label="Player '+(i+1)+' name">';row.querySelector('input').value=old[i]||'';$('nameInputs').appendChild(row)}}
+document.querySelectorAll('.count').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');initNames(Number(b.dataset.count))}));
+function setupDefault(){const b=document.querySelector('.count[data-count="6"]');if(b&&!document.querySelector('.count.selected'))b.click()}
+function collectPlayers(){return [...$('nameInputs').querySelectorAll('input')].map((x,i)=>({name:x.value.trim()||'Player '+(i+1),total:0,success:0}))}
+function makeDraft(players=state.players){return players.map(()=>({bid:'',actual:''}))}
+function syncDraftFromUI(){if(!state||!state.draft)return;document.querySelectorAll('.player').forEach((row,i)=>{const b=row.querySelector('.bid'),a=row.querySelector('.actual');if(b)state.draft[i].bid=b.value;if(a)state.draft[i].actual=a.value})}
+function startNew(){
+ const count=document.querySelector('.count.selected');if(!count){alert('Select 6, 7 or 8 players.');return}
+ if(state&&state.players&&state.rounds&&state.round<state.schedule?.length&&!state.completed){if(!confirm('Start a new game? The current unfinished game will be kept as the current game only until you replace it.'))return}
+ const players=collectPlayers(),schedule=makeSchedule(players.length);
+ state={version:2,id:'game-'+Date.now(),name:$('gameName').value.trim(),createdAt:new Date().toISOString(),players,round:0,schedule,rounds:[],trump:null,bidsFrozen:false,draft:makeDraft(players),completed:false};
+ randomTrump();save();renderGame();show('game');
+}
+$('startBtn').addEventListener('click',startNew);
+$('resumeBtn').addEventListener('click',()=>{const s=load();if(s&&s.version===2){state=s;renderGame();show('game')}});
+$('clearCurrentBtn').addEventListener('click',()=>{if(confirm('Discard the unfinished game? Completed games in history will remain.')){localStorage.removeItem(KEY);state=null;refreshSetup();show('setup')}});
+$('newGame').addEventListener('click',()=>{state=null;localStorage.removeItem(KEY);document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));$('nameInputs').innerHTML='';$('gameName').value='';setupDefault();refreshSetup();show('setup')});
+$('backSetup').addEventListener('click',()=>{syncDraftFromUI();save();refreshSetup();show('setup')});
+$('historyBtn').addEventListener('click',openHistory);$('showHistory').addEventListener('click',()=>{syncDraftFromUI();save();openHistory()});$('finalHistory').addEventListener('click',openHistory);
+$('historyBack').addEventListener('click',()=>{const s=load();if(s&&s.version===2&&!s.completed){state=s;renderGame();show('game')}else show('setup')});
+$('detailBack').addEventListener('click',openHistory);
+function renderGame(){
+ if(!state||state.completed){renderFinal();show('final');return}
+ const round=currentRound();if(!round){finishGame();return}
+ const cards=round.cards,totalDealt=state.players.length*cards,remaining=52-totalDealt;
+ $('roundTitle').textContent='Round '+(state.round+1)+' of '+state.schedule.length+(round.blind?' • BLIND ROUND':'');
+ $('roundSub').textContent=cards+' card'+(cards===1?'':'s')+' each • '+totalDealt+' dealt • '+remaining+' undealt'+(round.blind?' • Players bid without seeing their card':'');
+ $('gameTitleDisplay').textContent=state.name?'Game: '+state.name:'Unnamed game';
+ const s=SUITS[state.trump.suit];$('trumpSuit').textContent=s.symbol;$('trumpSuit').className='suit '+s.cls;$('trumpName').textContent=s.name;$('trumpCard').textContent=RANKS[state.trump.rank]+' of '+s.name;
+ $('changeTrump').disabled=state.bidsFrozen;$('freezeBids').disabled=state.bidsFrozen;$('freezeBids').textContent=state.bidsFrozen?'Bids & Trump Frozen ✓':'Freeze Bids & Trump';
+ $('changeTrump').textContent=state.bidsFrozen?'Trump Frozen':'Change Trump';
+ $('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.';
+ $('players').innerHTML=state.players.map((p,i)=>{const d=state.draft[i]||{bid:'',actual:''};return '<div class="player" data-i="'+i+'"><div class="player-head"><div class="pname">'+esc(p.name)+'</div><div class="round-score" id="rs'+i+'">—</div></div><div class="fields"><div class="field"><label for="bid'+i+'">Bid</label><input id="bid'+i+'" class="numinput bid" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Bid" value="'+esc(d.bid)+'" '+(state.bidsFrozen?'disabled':'')+'></div><div class="field"><label for="actual'+i+'">Actual</label><input id="actual'+i+'" class="numinput actual" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Actual" value="'+esc(d.actual)+'" '+(!state.bidsFrozen?'disabled':'')+'></div></div><div class="result" id="result'+i+'"> '+(state.bidsFrozen?'Enter actual score':'Bid not frozen yet')+'</div></div>'}).join('');
+ document.querySelectorAll('.player').forEach((row,i)=>row.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{syncDraftFromUI();preview(i);updateBidSum();saveDraftQuietly()})));
+ $('resetRound').textContent=state.bidsFrozen?'Reset Actuals':'Reset Round';
+ updateBidSum();state.players.forEach((_,i)=>preview(i));renderLeaderboard();
+}
+function saveDraftQuietly(){try{localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Unsaved'}}
+function updateBidSum(){const bids=state.draft.map(d=>d.bid).filter(v=>v!==''&&Number.isInteger(Number(v))&&Number(v)>=0);const sum=bids.reduce((s,v)=>s+Number(v),0),cards=currentRound().cards,complete=bids.length===state.players.length,blocked=complete&&sum===cards;$('bidSum').textContent=(complete?'Total bids: ':'Entered: ')+sum+' / '+state.players.length+' players';$('bidSum').className='bid-sum '+(blocked?'warn':complete?'ok':'');$('freezeBids').disabled=state.bidsFrozen||!complete||state.draft.some(d=>d.bid===''||!validValue(d.bid)||Number(d.bid)>cards);if(blocked){$('freezeNote').textContent='Invalid total: all bids add up to '+cards+', which equals the cards per player. Change at least one bid before freezing.';$('freezeNote').style.color='#ff8792'}else{$('freezeNote').style.color='';$('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.'}}
+function validValue(v){return String(v).trim()!==''&&Number.isInteger(Number(v))&&Number(v)>=0}
+function preview(i){
+ const row=document.querySelector('.player[data-i="'+i+'"]');if(!row)return;const b=state.draft[i]?.bid??'',a=state.draft[i]?.actual??'',out=$('result'+i),score=$('rs'+i);
+ if(!state.bidsFrozen){out.className='result';out.textContent='Bid not frozen yet';score.textContent='—';return}
+ if(a===''){out.className='result';out.textContent='Enter actual score';score.textContent='—';return}
+ if(!validValue(a)||Number(a)>currentRound().cards){out.className='result fail';out.textContent='Actual must be 0 to '+currentRound().cards;score.textContent='—';return}
+ const points=Number(b)===Number(a)?10+Number(a)*11:0;out.className='result '+(points?'success':'fail');out.textContent=points?'✓ Match • +'+points+' points':'✕ No match • 0 points';score.textContent='+'+points;
+}
+$('freezeBids').addEventListener('click',()=>{
+ if(state.bidsFrozen)return;syncDraftFromUI();const cards=currentRound().cards;
+ for(let i=0;i<state.players.length;i++){const b=state.draft[i].bid;if(b===''||!validValue(b)||Number(b)>cards){alert('Enter a whole-number bid from 0 to '+cards+' for '+state.players[i].name+'.');return}}
+ const sum=state.draft.reduce((n,d)=>n+Number(d.bid),0);
+ if(sum===cards){alert('The total of all bids cannot equal '+cards+' cards. Change one or more bids, then freeze again.');return}
+ state.bidsFrozen=true;save();renderGame();
+});
+$('resetRound').addEventListener('click',()=>{
+ if(state.bidsFrozen){if(!confirm('Clear all actual scores? Frozen bids and trump will stay locked.'))return;state.draft.forEach(d=>d.actual='')}
+ else {if(!confirm('Clear all bids and actual entries for this round?'))return;state.draft=makeDraft()}
+ save();renderGame();
+});
+$('changeTrump').addEventListener('click',()=>{if(state.bidsFrozen){alert('Trump is frozen with the bids and cannot be changed now.');return}randomTrump();save();renderGame()});
+$('saveRound').addEventListener('click',()=>{
+ if(!state.bidsFrozen){alert('Freeze the bids and trump before entering/saving actual scores.');return}
+ syncDraftFromUI();const cards=currentRound().cards,entries=[];
+ for(let i=0;i<state.players.length;i++){const d=state.draft[i],a=d.actual;if(a===''||!validValue(a)||Number(a)>cards){alert('Enter a whole-number ACTUAL score from 0 to '+cards+' for '+state.players[i].name+'.');return}const points=Number(d.bid)===Number(a)?10+Number(a)*11:0;entries.push({bid:Number(d.bid),actual:Number(a),points})}
+ state.rounds.push({round:state.round+1,cards,blind:currentRound().blind,direction:currentRound().direction,trump:{...state.trump},entries});
+ entries.forEach((e,i)=>{state.players[i].total+=e.points;if(e.points>0)state.players[i].success++});
+ state.round++;state.bidsFrozen=false;state.draft=makeDraft();
+ if(state.round<state.schedule.length)randomTrump();else{finishGame();return}
+ save();renderGame();show('game');
+});
+function finishGame(){state.completed=true;state.completedAt=new Date().toISOString();const completed={...state,players:state.players.map(p=>({...p})),rounds:state.rounds.map(r=>({...r,entries:r.entries.map(e=>({...e})),trump:{...r.trump}}))};history=loadHistory();history.unshift(completed);saveHistory();save();renderFinal();show('final')}
+function sortedPlayers(players){return [...players].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name))}
+function leaderboardHTML(players){return sortedPlayers(players).map((p,i)=>'<div class="leader-row"><div class="rank">'+(['🥇','🥈','🥉'][i]||String(i+1))+'</div><div><div class="leader-name">'+esc(p.name)+'</div><div class="leader-meta">'+(p.success||0)+' successful match'+((p.success||0)===1?'':'es')+'</div></div><div class="leader-score">'+p.total+'<div class="total">pts</div></div></div>').join('')}
+function renderLeaderboard(){ $('leaderboard').innerHTML=leaderboardHTML(state.players)}
+function renderFinal(){$('finalLeaderboard').innerHTML=leaderboardHTML(state.players)}
+function dateText(iso){try{return new Date(iso).toLocaleString()}catch(e){return iso||''}}
+function openHistory(){history=loadHistory();renderHistory();show('history')}
+function renderHistory(){
+ if(!history.length){$('historyList').innerHTML='<p class="notice">No completed games saved yet. Completed games will appear here automatically.</p>';return}
+ $('historyList').innerHTML=history.map(g=>'<div class="history-item"><div class="history-top"><div><div class="history-title">'+esc(g.name||'Unnamed game')+'</div><div class="history-date">'+esc(dateText(g.completedAt||g.createdAt))+' • '+g.players.length+' players • '+g.rounds.length+' rounds</div></div><strong>'+Math.max(...g.players.map(p=>p.total||0))+' pts</strong></div><div class="history-actions"><button class="secondary view-history" data-id="'+esc(g.id)+'" type="button">View details</button></div></div>').join('');
+ document.querySelectorAll('.view-history').forEach(b=>b.addEventListener('click',()=>openHistoryDetail(b.dataset.id)));
+}
+function openHistoryDetail(id){
+ history=loadHistory();const g=history.find(x=>x.id===id);if(!g){alert('This game was not found in history.');openHistory();return}
+ detailGameId=id;$('detailTitle').textContent=g.name||'Unnamed game';$('detailMeta').textContent=dateText(g.completedAt||g.createdAt)+' • '+g.players.length+' players • '+g.rounds.length+' rounds';$('detailLeaderboard').innerHTML=leaderboardHTML(g.players);
+ const names=g.players.map(p=>p.name);
+ $('roundDetails').innerHTML='<table><thead><tr><th>Round</th><th>Cards</th><th>Type</th><th>Trump</th>'+names.map(n=>'<th>'+esc(n)+' (B/A/P)</th>').join('')+'</tr></thead><tbody>'+g.rounds.map((r,ri)=>'<tr><td>'+(ri+1)+'</td><td>'+r.cards+'</td><td>'+(r.blind?'Blind':r.direction==='down'?'Descending':'Ascending')+'</td><td>'+esc(SUITS[r.trump.suit].name+' '+RANKS[r.trump.rank])+'</td>'+r.entries.map(e=>'<td>'+e.bid+'/'+e.actual+'/'+e.points+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+ show('historyDetail');
+}
+function refreshSetup(){
+ const s=load();const valid=s&&s.version===2&&!s.completed;
+ $('resumeBtn').classList.toggle('hidden',!valid);$('clearCurrentBtn').classList.toggle('hidden',!valid);
+ if(valid){$('resumeBtn').textContent='Resume '+(s.name||'Current Game')+' — Round '+(s.round+1)+'/'+s.schedule.length}
+}
+const saved=load();history=loadHistory();
+if(saved&&saved.version===2&&!saved.completed){state=saved;document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));const b=document.querySelector('.count[data-count="'+saved.players.length+'"]');if(b){b.classList.add('selected');initNames(saved.players.length);[...$('nameInputs').querySelectorAll('input')].forEach((x,i)=>x.value=saved.players[i].name)}$('gameName').value=saved.name||''}
+else setupDefault();
+refreshSetup();
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+if(!window.matchMedia('(display-mode: standalone)').matches&&/iPhone|iPad|iPod/.test(navigator.userAgent)){$('saveStatus').textContent='Local save'}
+})();
+</script>
+</body></html>
