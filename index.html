@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080b12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Judgement">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Judgement — Card Scoring</title>
+<style>
+:root{
+  --bg:#080b12; --panel:#101521; --panel2:#151c2a; --line:#263044;
+  --text:#f5f7fb; --muted:#8e9ab0; --accent:#7c5cff; --accent2:#19d3ae;
+  --danger:#ff5263; --gold:#f5c451; --shadow:0 18px 50px rgba(0,0,0,.32);
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% -10%,#1a2140 0,#080b12 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:760px;margin:auto;padding:18px 14px 40px}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.brand{font-size:23px;font-weight:800;letter-spacing:-.6px}.brand span{color:var(--accent)}
+.badge{font-size:12px;color:var(--muted);background:#121927;border:1px solid var(--line);padding:7px 10px;border-radius:999px}
+.screen{display:none}.screen.active{display:block}
+.hero{padding:25px 4px 20px}.hero h1{font-size:36px;line-height:1.05;margin:0 0 9px;letter-spacing:-1.5px}.hero p{margin:0;color:var(--muted);line-height:1.5}
+.card{background:linear-gradient(145deg,rgba(22,29,43,.96),rgba(12,17,27,.96));border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow);margin-bottom:14px}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:800;margin-bottom:10px}
+.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.count{background:#0d131f;border:1px solid var(--line);border-radius:14px;color:var(--text);padding:14px 8px;font-weight:800}
+.count.selected{border-color:var(--accent);background:rgba(124,92,255,.14);box-shadow:0 0 0 1px rgba(124,92,255,.25) inset}
+.names{display:grid;gap:10px}.name-row{display:flex;gap:9px;align-items:center}.num{width:28px;color:var(--muted);font-weight:700;text-align:center}
+input{width:100%;background:#0b111b;border:1px solid var(--line);border-radius:12px;color:var(--text);padding:13px 14px;outline:none}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,92,255,.12)}
+.primary{width:100%;border:0;border-radius:14px;padding:15px;background:linear-gradient(135deg,#7c5cff,#5b43dc);color:white;font-weight:900;font-size:16px;box-shadow:0 10px 25px rgba(92,67,220,.28)}
+.secondary{border:1px solid var(--line);background:#121927;color:var(--text);border-radius:12px;padding:10px 13px;font-weight:800}
+.danger{color:#ff8792;border-color:#54232b;background:#1a1015}
+.game-head{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.round-title{font-size:25px;font-weight:900}.sub{color:var(--muted);font-size:13px;margin-top:3px}
+.trump{display:flex;align-items:center;gap:9px;background:#0b111b;border:1px solid var(--line);padding:9px 11px;border-radius:14px}
+.suit{font-size:27px;line-height:1}.spade,.club{color:#f4f6fb}.heart,.diamond{color:#ff5263}
+.trump strong{font-size:13px}.trump small{display:block;color:var(--muted)}
+.players{display:grid;gap:10px;margin-top:14px}
+.player{background:#0c121d;border:1px solid var(--line);border-radius:16px;padding:13px}
+.player-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.pname{font-weight:850}.round-score{font-size:13px;font-weight:900}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.field label{display:block;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;margin:0 0 5px 2px}
+.numinput{text-align:center;font-size:18px;font-weight:800;padding:11px}
+.result{margin-top:9px;font-size:12px;font-weight:800;padding:7px 9px;border-radius:9px}
+.success{background:rgba(25,211,174,.1);color:#5ce4c7}.fail{background:rgba(255,82,99,.1);color:#ff8792}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.actions .primary{grid-column:1/-1}
+.leader{margin-top:14px}.leader-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid #20283a}
+.rank{font-weight:900;color:var(--muted)}.leader-name{font-weight:850}.leader-score{font-size:18px;font-weight:900}.leader-meta{color:var(--muted);font-size:11px;margin-top:2px}
+.medal{font-size:19px}.total{font-size:12px;color:var(--muted)}
+.final-score{text-align:center;padding:18px 0}.final-score .big{font-size:58px;font-weight:950;letter-spacing:-3px}.final-score p{color:var(--muted);margin:3px}
+.notice{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}
+.hidden{display:none!important}
+@media(max-width:480px){.hero h1{font-size:32px}.game-head{grid-template-columns:1fr}.trump{width:max-content}.card{padding:15px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">JUDGEMENT<span>•</span></div>
+    <div class="badge" id="saveStatus">Local save</div>
+  </div>
+
+  <section id="setup" class="screen active">
+    <div class="hero">
+      <h1>Ready to deal?</h1>
+      <p>12 rounds. Bid smart. Match your actual. Build the highest score.</p>
+    </div>
+    <div class="card">
+      <div class="label">Players</div>
+      <div class="counts">
+        <button class="count" data-count="6">6 Players</button>
+        <button class="count" data-count="7">7 Players</button>
+        <button class="count" data-count="8">8 Players</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="label">Player names</div>
+      <div id="nameInputs" class="names"></div>
+      <div class="notice">Choose 6–8 players. Names are saved on this device.</div>
+    </div>
+    <div class="card">
+      <button id="startBtn" class="primary">Start Game</button>
+    </div>
+    <div id="resumeCard" class="card hidden">
+      <button id="resumeBtn" class="secondary" style="width:100%">Resume Saved Game</button>
+      <button id="clearBtn" class="secondary danger" style="width:100%;margin-top:8px">Clear Saved Game</button>
+    </div>
+  </section>
+
+  <section id="game" class="screen">
+    <div class="card">
+      <div class="game-head">
+        <div>
+          <div class="round-title" id="roundTitle"></div>
+          <div class="sub" id="roundSub"></div>
+        </div>
+        <div class="trump">
+          <div class="suit" id="trumpSuit">♠</div>
+          <div><strong id="trumpName">Spade</strong><small id="trumpCard"></small></div>
+        </div>
+      </div>
+      <div class="actions">
+        <button id="changeTrump" class="secondary">Change Trump</button>
+        <button id="resetRound" class="secondary">Reset Inputs</button>
+      </div>
+    </div>
+    <div id="players" class="players"></div>
+    <div class="card">
+      <button id="saveRound" class="primary">Save Round & Continue</button>
+    </div>
+    <div class="card leader">
+      <div class="label">Leaderboard</div>
+      <div id="leaderboard"></div>
+    </div>
+  </section>
+
+  <section id="final" class="screen">
+    <div class="hero">
+      <h1>Game complete.</h1>
+      <p>All 12 rounds have been scored.</p>
+    </div>
+    <div class="card final-score">
+      <div class="label">Final leaderboard</div>
+      <div id="finalLeaderboard"></div>
+    </div>
+    <div class="card">
+      <button id="newGame" class="primary">New Game</button>
+      <button id="finalClear" class="secondary danger" style="width:100%;margin-top:9px">Clear Saved Game</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const ROUND_CARDS=[6,5,4,3,2,1,1,2,3,4,5,6];
+const SUITS=[
+  {name:"Spade",symbol:"♠",cls:"spade"},
+  {name:"Heart",symbol:"♥",cls:"heart"},
+  {name:"Diamond",symbol:"♦",cls:"diamond"},
+  {name:"Club",symbol:"♣",cls:"club"}
+];
+const RANKS=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+const KEY="judgement_card_game_v1";
+let state={players:[],round:0,rounds:[],trump:null};
+
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));$(id).classList.add("active")}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));$("saveStatus").textContent="Saved ✓"}
+function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
+function deck(){let d=[];SUITS.forEach((s,si)=>RANKS.forEach((r,ri)=>d.push({suit:si,rank:ri,name:r})));return d}
+function randomTrump(){
+  const used=state.rounds.flatMap(r=>r.trump ? [r.trump] : []);
+  const remaining=deck().filter(c=>!used.some(u=>u.suit===c.suit&&u.rank===c.rank));
+  const c=remaining[Math.floor(Math.random()*remaining.length)];
+  state.trump=c;
+}
+function trumpText(c){return `${SUITS[c.suit].name} ${RANKS[c.rank]}`}
+function initNames(n){
+  const old=state.players.map(p=>p.name);
+  $("nameInputs").innerHTML="";
+  for(let i=0;i<n;i++){
+    const row=document.createElement("div");row.className="name-row";
+    row.innerHTML=`<div class="num">${i+1}</div><input maxlength="22" placeholder="Player ${i+1}" value="${old[i]||""}">`;
+    $("nameInputs").appendChild(row);
+  }
+}
+document.querySelectorAll(".count").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".count").forEach(x=>x.classList.remove("selected"));
+  b.classList.add("selected");initNames(+b.dataset.count);
+});
+function setupDefault(){document.querySelector('.count[data-count="6"]').click()}
+function collectPlayers(){
+  const inputs=[...$("nameInputs").querySelectorAll("input")];
+  return inputs.map((x,i)=>({name:x.value.trim()||`Player ${i+1}`,total:0,success:0}));
+}
+$("startBtn").onclick=()=>{
+  const count=document.querySelector(".count.selected"); if(!count)return alert("Select 6, 7 or 8 players.");
+  state={players:collectPlayers(),round:0,rounds:[],trump:null}; randomTrump(); save(); renderGame(); show("game");
+};
+$("resumeBtn").onclick=()=>{const s=load();if(s){state=s;renderGame();show(state.round>=12?"final":"game")}};
+$("clearBtn").onclick=()=>{localStorage.removeItem(KEY);location.reload()};
+$("finalClear").onclick=()=>{localStorage.removeItem(KEY);location.reload()};
+$("newGame").onclick=()=>{state={players:[],round:0,rounds:[],trump:null};setupDefault();show("setup")};
+
+function renderGame(){
+  if(state.round>=12){renderFinal();show("final");return}
+  const cards=ROUND_CARDS[state.round];
+  $("roundTitle").textContent=`Round ${state.round+1} of 12`;
+  $("roundSub").textContent=`${cards} card${cards===1?"":"s"} each • ${52-state.players.length*cards} cards remain after the deal`;
+  const s=SUITS[state.trump.suit];$("trumpSuit").textContent=s.symbol;$("trumpSuit").className=`suit ${s.cls}`;
+  $("trumpName").textContent=s.name;$("trumpCard").textContent=`${RANKS[state.trump.rank]} of ${s.name}`;
+  $("players").innerHTML=state.players.map((p,i)=>`
+    <div class="player" data-i="${i}">
+      <div class="player-head"><div class="pname">${esc(p.name)}</div><div class="round-score" id="rs${i}">—</div></div>
+      <div class="fields">
+        <div class="field"><label>Bid</label><input class="numinput bid" type="number" min="0" max="${cards}" inputmode="numeric" placeholder="0"></div>
+        <div class="field"><label>Actual</label><input class="numinput actual" type="number" min="0" max="${cards}" inputmode="numeric" placeholder="0"></div>
+      </div>
+      <div class="result" id="result${i}">Enter bid & actual</div>
+    </div>`).join("");
+  document.querySelectorAll(".player").forEach((row,i)=>{
+    row.querySelectorAll("input").forEach(inp=>inp.oninput=()=>preview(i));
+  });
+  renderLeaderboard();
+}
+function preview(i){
+  const row=document.querySelector(`.player[data-i="${i}"]`),b=row.querySelector(".bid").value,a=row.querySelector(".actual").value;
+  const out=$(`result${i}`),score=$(`rs${i}`);
+  if(b===""||a===""){out.className="result";out.textContent="Enter bid & actual";score.textContent="—";return}
+  const points=(+b===+a)?10+(+a*11):0;
+  out.className=`result ${points?"success":"fail"}`;out.textContent=points?`✓ Match • +${points} points`:`✕ No match • 0 points`;score.textContent=`+${points}`;
+}
+$("resetRound").onclick=()=>renderGame();
+$("changeTrump").onclick=()=>{randomTrump();save();renderGame()};
+$("saveRound").onclick=()=>{
+  const cards=ROUND_CARDS[state.round], entries=[];
+  for(let i=0;i<state.players.length;i++){
+    const row=document.querySelector(`.player[data-i="${i}"]`);
+    const b=row.querySelector(".bid").value,a=row.querySelector(".actual").value;
+    if(b===""||a==="")return alert(`Enter BID and ACTUAL for ${state.players[i].name}.`);
+    if(+b<0||+b>cards||+a<0||+a>cards)return alert(`Values for ${state.players[i].name} must be between 0 and ${cards}.`);
+    const points=(+b===+a)?10+(+a*11):0;
+    entries.push({bid:+b,actual:+a,points});
+  }
+  state.rounds.push({cards,trump:state.trump,entries});
+  entries.forEach((e,i)=>{state.players[i].total+=e.points;if(e.points>0)state.players[i].success++});
+  state.round++;
+  if(state.round<12)randomTrump();
+  save();renderGame();show(state.round>=12?"final":"game");
+};
+function renderLeaderboard(target="leaderboard"){
+  const sorted=[...state.players].map((p,i)=>({...p,i})).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
+  $(target).innerHTML=sorted.map((p,i)=>`
+    <div class="leader-row">
+      <div class="rank">${i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+      <div><div class="leader-name">${esc(p.name)}</div><div class="leader-meta">${p.success} successful match${p.success===1?"":"es"}</div></div>
+      <div class="leader-score">${p.total}<div class="total">pts</div></div>
+    </div>`).join("");
+}
+function renderFinal(){
+  $("finalLeaderboard").innerHTML="";
+  const sorted=[...state.players].map((p,i)=>({...p,i})).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
+  $("finalLeaderboard").innerHTML=sorted.map((p,i)=>`
+    <div class="leader-row">
+      <div class="rank">${i<3?["🥇","🥈","🥉"][i]:i+1}</div>
+      <div><div class="leader-name">${esc(p.name)}</div><div class="leader-meta">${p.success}/12 successful bids</div></div>
+      <div class="leader-score">${p.total}<div class="total">pts</div></div>
+    </div>`).join("");
+}
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+const saved=load();
+if(saved&&saved.players?.length){
+  state=saved;$("resumeCard").classList.remove("hidden");
+  const c=document.querySelector(`.count[data-count="${saved.players.length}"]`);if(c){c.classList.add("selected");initNames(saved.players.length)}
+}else setupDefault();
+</script>
+</body>
+</html>
