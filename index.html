@@ -26,6 +26,8 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
 .players{display:grid;gap:10px;margin-top:13px}.player{background:#0c121d;border:1px solid var(--line);border-radius:16px;padding:13px}.player-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.pname{font-weight:850;overflow-wrap:anywhere}.round-score{font-size:13px;font-weight:900;white-space:nowrap}.fields{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field label{display:block;color:var(--muted);font-size:11px;font-weight:850;text-transform:uppercase;margin:0 0 5px 2px}.numinput{text-align:center;font-size:18px;font-weight:850;padding:11px}.result{margin-top:9px;font-size:12px;font-weight:850;padding:8px 9px;border-radius:9px}.success{background:rgba(25,211,174,.1);color:#5ce4c7}.fail{background:rgba(255,82,99,.1);color:#ff8792}.locked-note{font-size:12px;color:#cfc6ff;line-height:1.45;margin-top:10px}
 .leader-row{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #20283a}.leader-row:last-child{border-bottom:0}.rank{font-weight:900;color:var(--muted)}.leader-name{font-weight:850}.leader-score{font-size:18px;font-weight:900;text-align:right}.leader-meta{color:var(--muted);font-size:11px;margin-top:2px}.total{font-size:12px;color:var(--muted)}
 .notice{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}.hidden{display:none!important}.history-item{border:1px solid var(--line);background:#0b111b;border-radius:14px;padding:13px;margin-top:9px}.history-top{display:flex;justify-content:space-between;gap:8px;align-items:start}.history-title{font-weight:850;overflow-wrap:anywhere}.history-date{font-size:11px;color:var(--muted);margin-top:4px}.history-actions{display:flex;gap:8px;margin-top:10px}.history-actions button{flex:1}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;min-width:520px}th,td{border-bottom:1px solid #283146;padding:9px 8px;text-align:left;white-space:nowrap}th{color:#cfc6ff}
+.name-row{position:relative}.name-row input{flex:1}.name-pick{max-width:42%;background:#121927;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 7px;font-size:12px}.suggestions{position:absolute;z-index:20;left:35px;right:0;top:calc(100% - 2px);background:#111827;border:1px solid #46506a;border-radius:10px;max-height:190px;overflow:auto;box-shadow:var(--shadow)}.suggestions button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid #263044;color:var(--text);padding:11px;font-size:14px}.suggestions button:last-child{border-bottom:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.panel-head .label{margin-bottom:0}.highlight-winner{border-color:#8a6a24;background:linear-gradient(110deg,rgba(218,165,32,.16),rgba(22,29,43,.96))}.highlight-second{border-color:#596578}.highlight-third{border-color:#78543d}.share-text{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b111b;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.5}
+
 @media(max-width:480px){.hero h1{font-size:32px}.game-head{grid-template-columns:1fr}.trump{width:max-content}.card{padding:14px}.actions{grid-template-columns:1fr 1fr}.fields{gap:7px}.numinput{padding:10px 5px}}
 </style>
 </head>
@@ -37,7 +39,7 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
   <div class="hero"><h1>Ready to deal?</h1><p>Bid first. Freeze the bids and trump. Play the round, then enter actual tricks.</p></div>
   <div class="card"><div class="label">Game name (optional)</div><input id="gameName" maxlength="60" placeholder="e.g. Sunday Club Game"></div>
   <div class="card"><div class="label">Players</div><div class="counts"><button class="count" data-count="6" type="button">6 Players</button><button class="count" data-count="7" type="button">7 Players</button><button class="count" data-count="8" type="button">8 Players</button></div></div>
-  <div class="card"><div class="label">Player names</div><div id="nameInputs" class="names"></div><div class="notice">Rounds are based on the maximum cards that fit in a 52-card deck.</div></div>
+  <div class="card"><div class="label">Player names</div><div id="nameInputs" class="names"></div><div class="actions"><button id="saveNameList" class="secondary" type="button">Save Player List</button><button id="clearSavedNames" class="secondary" type="button">Manage Saved Names</button></div><div id="savedNamesNote" class="notice">Save names once; they will be available in the name dropdown on future games.</div><div class="notice">Rounds are based on the maximum cards that fit in a 52-card deck.</div></div>
   <div class="card"><button id="startBtn" class="primary" type="button">Start New Game</button><div class="actions"><button id="resumeBtn" class="secondary hidden" type="button">Resume Current Game</button><button id="historyBtn" class="secondary" type="button">Game History</button></div><button id="clearCurrentBtn" class="secondary danger hidden" style="width:100%;margin-top:9px" type="button">Discard Current Game</button></div>
  </section>
 
@@ -45,12 +47,16 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
   <div class="card">
    <div class="actions" style="margin-top:0;margin-bottom:13px"><button id="backSetup" class="secondary" type="button">← Back to Setup</button><button id="showHistory" class="secondary" type="button">Game History</button></div>
    <div class="game-head"><div><div class="round-title" id="roundTitle"></div><div class="sub" id="roundSub"></div><div class="sub" id="gameTitleDisplay"></div></div><div class="trump"><div class="suit" id="trumpSuit">♠</div><div><strong id="trumpName">Spade</strong><small id="trumpCard"></small></div></div></div>
-   <div class="actions"><button id="changeTrump" class="secondary" type="button">Change Trump</button><button id="resetRound" class="secondary" type="button">Reset Round</button><button id="freezeBids" class="primary wide" type="button">Freeze Bids &amp; Trump</button></div>
+   <div class="actions"><button id="changeTrump" class="secondary" type="button">Change Trump</button><button id="resetRound" class="secondary" type="button">Reset Round</button><button id="freezeBids" class="primary wide" type="button">Freeze Bids &amp; Trump</button><button id="editNamesBtn" class="secondary" type="button">Edit Player Names</button><button id="roundScoresBtn" class="secondary" type="button">Round Scorecard</button><button id="playerHistoryBtn" class="secondary" type="button">Player History</button></div>
    <div id="bidStatus" class="statusline"><span>Bid total</span><strong id="bidSum" class="bid-sum">0</strong></div>
+   <div id="actualStatus" class="statusline hidden" aria-live="polite"><span id="actualStatusText">Actual tricks total</span><strong id="actualSum" class="bid-sum">0</strong></div>
    <div id="freezeNote" class="locked-note">Enter every bid. The total bid must not equal the cards dealt per player. Freeze bids before playing.</div>
   </div>
   <div id="players" class="players"></div>
   <div class="card"><button id="saveRound" class="primary" type="button">Save Actual Scores &amp; Continue</button><div class="notice">Actual scores can be entered only after bids and trump are frozen.</div></div>
+  <div id="editNamesPanel" class="card hidden"><div class="panel-head"><div class="label">Edit player names</div><button id="cancelEditNames" class="secondary" type="button">Close</button></div><p class="notice">Names can be changed or replaced at any time. Existing scores stay exactly the same.</p><div id="gameNameInputs" class="names"></div><button id="saveEditedNames" class="primary" style="margin-top:12px" type="button">Save Names</button></div>
+  <div id="roundScoresPanel" class="card hidden"><div class="panel-head"><div class="label">Round scorecard</div><button id="closeRoundScores" class="secondary" type="button">Close</button></div><div id="roundScoresTable" class="table-wrap" style="margin-top:12px"></div></div>
+  <div id="playerHistoryPanel" class="card hidden"><div class="panel-head"><div class="label">Player history</div><button id="closePlayerHistory" class="secondary" type="button">Close</button></div><label for="playerHistorySelect" class="notice">Choose a player to see previous results</label><select id="playerHistorySelect" style="width:100%;margin-top:8px;background:#0b111b;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px"></select><div id="playerHistoryResults" style="margin-top:12px"></div></div>
   <div class="card"><div class="label">Leaderboard</div><div id="leaderboard"></div></div>
  </section>
 
@@ -68,13 +74,16 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
  <section id="final" class="screen">
   <div class="hero"><h1>Game complete.</h1><p>All rounds have been scored and this game has been added to history.</p></div>
   <div class="card"><div class="label">Final leaderboard</div><div id="finalLeaderboard"></div></div>
+  <div class="card"><div class="label">Share results</div><div id="sharePreview" class="share-text"></div><button id="shareWhatsApp" class="primary" style="margin-top:10px" type="button">Share Final Score on WhatsApp</button><button id="copyResults" class="secondary" style="width:100%;margin-top:9px" type="button">Copy Results Text</button></div>
   <div class="card"><button id="newGame" class="primary" type="button">Start New Game</button><button id="finalHistory" class="secondary" style="width:100%;margin-top:9px" type="button">View Game History</button></div>
  </section>
 </div>
 <script>
 (function(){
 'use strict';
-const KEY='judgement_card_game_v2', HISTORY_KEY='judgement_card_history_v2';
+const KEY='judgement_card_game_v2', HISTORY_KEY='judgement_card_history_v2', NAMES_KEY='judgement_saved_player_names_v1';
+let actualWarningActive=false;
+function beep(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const ctx=new AC();const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=880;gain.gain.setValueAtTime(0.0001,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(0.18,ctx.currentTime+0.012);gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.22);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+0.23);osc.onended=()=>ctx.close();}catch(e){}}
 const SUITS=[{name:'Spade',symbol:'♠',cls:'spade'},{name:'Heart',symbol:'♥',cls:'heart'},{name:'Diamond',symbol:'♦',cls:'diamond'},{name:'Club',symbol:'♣',cls:'club'}];
 const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let state=null, history=[], detailGameId=null;
@@ -91,10 +100,15 @@ function currentRound(){return state.schedule[state.round]}
 function deck(){const d=[];SUITS.forEach((s,si)=>RANKS.forEach((r,ri)=>d.push({suit:si,rank:ri})));return d}
 function shuffled(d){for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
 function randomTrump(){const dealt=state.players.length*currentRound().cards;const d=shuffled(deck());state.trump=d[Math.min(dealt,d.length-1)];}
-function initNames(n){const old=[...$('nameInputs').querySelectorAll('input')].map(x=>x.value);$('nameInputs').innerHTML='';for(let i=0;i<n;i++){const row=document.createElement('div');row.className='name-row';row.innerHTML='<div class="num">'+(i+1)+'</div><input maxlength="22" autocomplete="off" placeholder="Player '+(i+1)+'" aria-label="Player '+(i+1)+' name">';row.querySelector('input').value=old[i]||'';$('nameInputs').appendChild(row)}}
+function loadSavedNames(){try{const x=JSON.parse(localStorage.getItem(NAMES_KEY));return Array.isArray(x)?x.filter(Boolean):[]}catch(e){return []}}
+function saveSavedNames(list){const cleaned=[...new Set(list.map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));try{localStorage.setItem(NAMES_KEY,JSON.stringify(cleaned));return true}catch(e){alert('Could not save player names on this device.');return false}}
+function addNamesToSaved(list){return saveSavedNames(loadSavedNames().concat(list))}
+function makeNameRow(containerId,i,value=''){const container=$(containerId),row=document.createElement('div');row.className='name-row';row.innerHTML='<div class="num">'+(i+1)+'</div><input maxlength="22" autocomplete="off" placeholder="Player '+(i+1)+'" aria-label="Player '+(i+1)+' name"><div class="suggestions hidden"></div>';const input=row.querySelector('input');input.value=value;input.addEventListener('focus',()=>showNameSuggestions(row,input));input.addEventListener('input',()=>showNameSuggestions(row,input));container.appendChild(row)}
+function showNameSuggestions(row,input){const box=row.querySelector('.suggestions'),all=loadSavedNames(),q=input.value.trim().toLowerCase(),items=all.filter(n=>!q||n.toLowerCase().includes(q));if(!items.length){box.classList.add('hidden');box.innerHTML='';return}box.innerHTML=items.map(n=>'<button type="button" data-name="'+esc(n)+'">'+esc(n)+'</button>').join('');box.classList.remove('hidden');box.querySelectorAll('button').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{input.value=b.dataset.name;box.classList.add('hidden');input.dispatchEvent(new Event('change',{bubbles:true}))}))}
+function initNames(n){const old=[...$('nameInputs').querySelectorAll('input')].map(x=>x.value);$('nameInputs').innerHTML='';for(let i=0;i<n;i++)makeNameRow('nameInputs',i,old[i]||'')}
 document.querySelectorAll('.count').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');initNames(Number(b.dataset.count))}));
 function setupDefault(){const b=document.querySelector('.count[data-count="6"]');if(b&&!document.querySelector('.count.selected'))b.click()}
-function collectPlayers(){return [...$('nameInputs').querySelectorAll('input')].map((x,i)=>({name:x.value.trim()||'Player '+(i+1),total:0,success:0}))}
+function collectPlayers(){const names=[...$('nameInputs').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Player '+(i+1));addNamesToSaved(names);return names.map((name,i)=>({id:'p-'+i+'-'+Date.now(),name,total:0,success:0}))}
 function makeDraft(players=state.players){return players.map(()=>({bid:'',actual:''}))}
 function syncDraftFromUI(){if(!state||!state.draft)return;document.querySelectorAll('.player').forEach((row,i)=>{const b=row.querySelector('.bid'),a=row.querySelector('.actual');if(b)state.draft[i].bid=b.value;if(a)state.draft[i].actual=a.value})}
 function startNew(){
@@ -105,6 +119,8 @@ function startNew(){
  randomTrump();save();renderGame();show('game');
 }
 $('startBtn').addEventListener('click',startNew);
+$('saveNameList').addEventListener('click',()=>{const names=[...$('nameInputs').querySelectorAll('input')].map(x=>x.value.trim()).filter(Boolean);if(!names.length){alert('Enter at least one player name first.');return}if(saveSavedNames(loadSavedNames().concat(names))){$('savedNamesNote').textContent='Saved '+names.length+' name(s). They will appear in the name dropdown next time.';alert('Player names saved on this device.')}});
+$('clearSavedNames').addEventListener('click',()=>{const list=loadSavedNames();if(!list.length){alert('No saved player names yet.');return}const choice=prompt('Saved player names:\n'+list.map((n,i)=>(i+1)+'. '+n).join('\n')+'\n\nTo remove all saved names, type DELETE. To keep them, tap Cancel.');if(choice==='DELETE'){saveSavedNames([]);alert('Saved names cleared.')}});
 $('resumeBtn').addEventListener('click',()=>{const s=load();if(s&&s.version===2){state=s;renderGame();show('game')}});
 $('clearCurrentBtn').addEventListener('click',()=>{if(confirm('Discard the unfinished game? Completed games in history will remain.')){localStorage.removeItem(KEY);state=null;refreshSetup();show('setup')}});
 $('newGame').addEventListener('click',()=>{state=null;localStorage.removeItem(KEY);document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));$('nameInputs').innerHTML='';$('gameName').value='';setupDefault();refreshSetup();show('setup')});
@@ -113,6 +129,7 @@ $('historyBtn').addEventListener('click',openHistory);$('showHistory').addEventL
 $('historyBack').addEventListener('click',()=>{const s=load();if(s&&s.version===2&&!s.completed){state=s;renderGame();show('game')}else show('setup')});
 $('detailBack').addEventListener('click',openHistory);
 function renderGame(){
+ ['editNamesPanel','roundScoresPanel','playerHistoryPanel'].forEach(id=>$(id).classList.add('hidden'));
  if(!state||state.completed){renderFinal();show('final');return}
  const round=currentRound();if(!round){finishGame();return}
  const cards=round.cards,totalDealt=state.players.length*cards,remaining=52-totalDealt;
@@ -123,13 +140,25 @@ function renderGame(){
  $('changeTrump').disabled=state.bidsFrozen;$('freezeBids').disabled=state.bidsFrozen;$('freezeBids').textContent=state.bidsFrozen?'Bids & Trump Frozen ✓':'Freeze Bids & Trump';
  $('changeTrump').textContent=state.bidsFrozen?'Trump Frozen':'Change Trump';
  $('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.';
+ $('actualStatus').classList.toggle('hidden',!state.bidsFrozen);actualWarningActive=false;
  $('players').innerHTML=state.players.map((p,i)=>{const d=state.draft[i]||{bid:'',actual:''};return '<div class="player" data-i="'+i+'"><div class="player-head"><div class="pname">'+esc(p.name)+'</div><div class="round-score" id="rs'+i+'">—</div></div><div class="fields"><div class="field"><label for="bid'+i+'">Bid</label><input id="bid'+i+'" class="numinput bid" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Bid" value="'+esc(d.bid)+'" '+(state.bidsFrozen?'disabled':'')+'></div><div class="field"><label for="actual'+i+'">Actual</label><input id="actual'+i+'" class="numinput actual" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Actual" value="'+esc(d.actual)+'" '+(!state.bidsFrozen?'disabled':'')+'></div></div><div class="result" id="result'+i+'"> '+(state.bidsFrozen?'Enter actual score':'Bid not frozen yet')+'</div></div>'}).join('');
- document.querySelectorAll('.player').forEach((row,i)=>row.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{syncDraftFromUI();preview(i);updateBidSum();saveDraftQuietly()})));
+ document.querySelectorAll('.player').forEach((row,i)=>row.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{syncDraftFromUI();preview(i);updateBidSum();updateActualSum(true);saveDraftQuietly()})));
  $('resetRound').textContent=state.bidsFrozen?'Reset Actuals':'Reset Round';
- updateBidSum();state.players.forEach((_,i)=>preview(i));renderLeaderboard();
+ updateBidSum();updateActualSum(false);state.players.forEach((_,i)=>preview(i));renderLeaderboard();
 }
 function saveDraftQuietly(){try{localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Unsaved'}}
 function updateBidSum(){const bids=state.draft.map(d=>d.bid).filter(v=>v!==''&&Number.isInteger(Number(v))&&Number(v)>=0);const sum=bids.reduce((s,v)=>s+Number(v),0),cards=currentRound().cards,complete=bids.length===state.players.length,blocked=complete&&sum===cards;$('bidSum').textContent=(complete?'Total bids: ':'Entered: ')+sum+' / '+state.players.length+' players';$('bidSum').className='bid-sum '+(blocked?'warn':complete?'ok':'');$('freezeBids').disabled=state.bidsFrozen||!complete||state.draft.some(d=>d.bid===''||!validValue(d.bid)||Number(d.bid)>cards);if(blocked){$('freezeNote').textContent='Invalid total: all bids add up to '+cards+', which equals the cards per player. Change at least one bid before freezing.';$('freezeNote').style.color='#ff8792'}else{$('freezeNote').style.color='';$('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.'}}
+function updateActualSum(allowBeep=true){
+ if(!state||!state.bidsFrozen||!currentRound())return;
+ const cards=currentRound().cards,values=state.draft.map(d=>d.actual),entered=values.filter(v=>v!==''&&validValue(v)&&Number(v)<=cards),sum=entered.reduce((n,v)=>n+Number(v),0),complete=entered.length===state.players.length,invalidField=values.some(v=>v!==''&&(!validValue(v)||Number(v)>cards));
+ const invalid=invalidField||sum>cards||(complete&&sum!==cards);$('actualStatus').classList.remove('hidden');$('actualSum').textContent=sum+' / '+cards;$('actualSum').className='bid-sum '+(complete&&sum===cards?'ok':invalid?'warn':'');
+ if(invalidField){$('actualStatusText').textContent='ERROR: each actual score must be a whole number from 0 to '+cards;}
+ else if(sum>cards){$('actualStatusText').textContent='ERROR: actual tricks exceed cards dealt';}
+ else if(complete&&sum!==cards){$('actualStatusText').textContent='ERROR: actual tricks must total '+cards;}
+ else if(complete){$('actualStatusText').textContent='Actual tricks total is correct ✓';}
+ else{$('actualStatusText').textContent='Actual tricks entered: '+entered.length+'/'+state.players.length;}
+ if(invalid){if(allowBeep&&!actualWarningActive)beep();actualWarningActive=!!allowBeep;}else actualWarningActive=false;
+}
 function validValue(v){return String(v).trim()!==''&&Number.isInteger(Number(v))&&Number(v)>=0}
 function preview(i){
  const row=document.querySelector('.player[data-i="'+i+'"]');if(!row)return;const b=state.draft[i]?.bid??'',a=state.draft[i]?.actual??'',out=$('result'+i),score=$('rs'+i);
@@ -145,6 +174,33 @@ $('freezeBids').addEventListener('click',()=>{
  if(sum===cards){alert('The total of all bids cannot equal '+cards+' cards. Change one or more bids, then freeze again.');return}
  state.bidsFrozen=true;save();renderGame();
 });
+$('editNamesBtn').addEventListener('click',()=>{renderEditNames();$('editNamesPanel').classList.remove('hidden')});
+$('cancelEditNames').addEventListener('click',()=>$('editNamesPanel').classList.add('hidden'));
+$('saveEditedNames').addEventListener('click',()=>{const names=[...$('gameNameInputs').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Player '+(i+1));names.forEach((name,i)=>state.players[i].name=name);addNamesToSaved(names);save();renderGame();$('editNamesPanel').classList.remove('hidden');renderEditNames();$('editNamesPanel').classList.remove('hidden');alert('Player names saved. All existing scores are unchanged.');});
+$('roundScoresBtn').addEventListener('click',()=>{renderRoundScorecard();$('roundScoresPanel').classList.remove('hidden')});
+$('closeRoundScores').addEventListener('click',()=>$('roundScoresPanel').classList.add('hidden'));
+$('playerHistoryBtn').addEventListener('click',()=>{renderPlayerHistorySelect();$('playerHistoryPanel').classList.remove('hidden')});
+$('closePlayerHistory').addEventListener('click',()=>$('playerHistoryPanel').classList.add('hidden'));
+$('playerHistorySelect').addEventListener('change',renderSelectedPlayerHistory);
+$('shareWhatsApp').addEventListener('click',()=>{const text=buildShareText();window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank')});
+$('copyResults').addEventListener('click',async()=>{const text=buildShareText();try{await navigator.clipboard.writeText(text);alert('Results copied. You can paste them into WhatsApp.')}catch(e){const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();try{document.execCommand('copy');alert('Results copied. You can paste them into WhatsApp.')}catch(err){alert('Copy was blocked. Please select and copy the results shown above.')}area.remove()}});
+function renderEditNames(){if(!state)return;$('gameNameInputs').innerHTML='';state.players.forEach((p,i)=>makeNameRow('gameNameInputs',i,p.name))}
+function renderRoundScorecard(){
+ if(!state)return;
+ const players=state.players,rounds=state.rounds||[];
+ let html='<table><thead><tr><th>Round</th><th>Cards</th>'+players.map(p=>'<th>'+esc(p.name)+' (pts)</th>').join('')+'</tr></thead><tbody>';
+ rounds.forEach(r=>{
+  html+='<tr><td>'+r.round+'</td><td>'+r.cards+(r.blind?' Blind':'')+'</td>';
+  players.forEach((p,pi)=>{const e=r.entries[pi]||{};html+='<td>'+(e.points??0)+' <small>('+ (e.bid??'—') + '/' + (e.actual??'—') + ')</small></td>'});
+  html+='</tr>';
+ });
+ if(!rounds.length)html+='<tr><td colspan="'+(players.length+2)+'">No rounds completed yet.</td></tr>';
+ html+='<tr><th>Total</th><th>—</th>'+players.map(p=>'<th>'+p.total+'</th>').join('')+'</tr></tbody></table>';
+ $('roundScoresTable').innerHTML=html;
+}
+function renderPlayerHistorySelect(){const names=[...new Set(loadHistory().flatMap(g=>g.players.map(p=>p.name)).concat(state?state.players.map(p=>p.name):[]))].sort((a,b)=>a.localeCompare(b));$('playerHistorySelect').innerHTML=names.length?names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join(''):'<option value="">No players yet</option>';renderSelectedPlayerHistory()}
+function renderSelectedPlayerHistory(){const name=$('playerHistorySelect').value;if(!name){$('playerHistoryResults').innerHTML='<p class="notice">Complete a game to start building player history.</p>';return}const games=loadHistory(),records=[];games.forEach(g=>{const player=g.players.find(p=>p.name===name);if(player){const rank=sortedPlayers(g.players).findIndex(p=>p.name===name)+1;records.push({g,player,rank})}});const wins=records.filter(r=>r.rank===1).length,seconds=records.filter(r=>r.rank===2).length,thirds=records.filter(r=>r.rank===3).length,avg=records.length?Math.round(records.reduce((s,r)=>s+r.player.total,0)/records.length):0,best=records.length?Math.max(...records.map(r=>r.player.total)):0;let html='<div class="card"><strong>'+esc(name)+'</strong><p class="notice">Games: '+records.length+' • 🥇 Wins: '+wins+' • 🥈 2nd: '+seconds+' • 🥉 3rd: '+thirds+'<br>Average score: '+avg+' • Best score: '+best+'</p></div>';if(!records.length)html+='<p class="notice">No completed games found for this name yet. Game history is stored on this device/browser.</p>';else html+='<div class="table-wrap"><table><thead><tr><th>Game</th><th>Date</th><th>Place</th><th>Score</th></tr></thead><tbody>'+records.map(r=>'<tr><td>'+esc(r.g.name||'Unnamed game')+'</td><td>'+esc(dateText(r.g.completedAt||r.g.createdAt))+'</td><td>'+(['🥇','🥈','🥉'][r.rank-1]||r.rank)+'</td><td>'+r.player.total+'</td></tr>').join('')+'</tbody></table></div>';$('playerHistoryResults').innerHTML=html}
+function buildShareText(){const ordered=sortedPlayers(state.players),medals=['🥇 WINNER','🥈 SECOND PLACE','🥉 THIRD PLACE'];let lines=['🃏 JUDGEMENT CARD SCORING',state.name||'Completed game',''];ordered.forEach((p,i)=>lines.push((medals[i]||('#'+(i+1)))+' — '+p.name+': '+p.total+' points'));lines.push('','Round-wise scores:');lines.push('Round | '+state.players.map(p=>p.name).join(' | '));(state.rounds||[]).forEach(r=>lines.push(r.round+' ('+r.cards+' cards) | '+r.entries.map(e=>e.points).join(' | ')));return lines.join('\n')}
 $('resetRound').addEventListener('click',()=>{
  if(state.bidsFrozen){if(!confirm('Clear all actual scores? Frozen bids and trump will stay locked.'))return;state.draft.forEach(d=>d.actual='')}
  else {if(!confirm('Clear all bids and actual entries for this round?'))return;state.draft=makeDraft()}
@@ -154,7 +210,8 @@ $('changeTrump').addEventListener('click',()=>{if(state.bidsFrozen){alert('Trump
 $('saveRound').addEventListener('click',()=>{
  if(!state.bidsFrozen){alert('Freeze the bids and trump before entering/saving actual scores.');return}
  syncDraftFromUI();const cards=currentRound().cards,entries=[];
- for(let i=0;i<state.players.length;i++){const d=state.draft[i],a=d.actual;if(a===''||!validValue(a)||Number(a)>cards){alert('Enter a whole-number ACTUAL score from 0 to '+cards+' for '+state.players[i].name+'.');return}const points=Number(d.bid)===Number(a)?10+Number(a)*11:0;entries.push({bid:Number(d.bid),actual:Number(a),points})}
+ let actualTotal=0;for(let i=0;i<state.players.length;i++){const d=state.draft[i],a=d.actual;if(a===''||!validValue(a)||Number(a)>cards){beep();alert('Feeding error: enter a whole-number ACTUAL score from 0 to '+cards+' for '+state.players[i].name+'.');return}actualTotal+=Number(a);const points=Number(d.bid)===Number(a)?10+Number(a)*11:0;entries.push({bid:Number(d.bid),actual:Number(a),points})}
+ if(actualTotal!==cards){beep();actualWarningActive=true;$('actualStatus').classList.remove('hidden');$('actualStatusText').textContent='ERROR: actual tricks total '+actualTotal+'; required total is '+cards;$('actualSum').textContent=actualTotal+' / '+cards;$('actualSum').className='bid-sum warn';alert('FEEDING ERROR — Round '+(state.round+1)+': actual tricks total '+actualTotal+', but exactly '+cards+' tricks must be distributed. Please correct the entries before saving.');return}
  state.rounds.push({round:state.round+1,cards,blind:currentRound().blind,direction:currentRound().direction,trump:{...state.trump},entries});
  entries.forEach((e,i)=>{state.players[i].total+=e.points;if(e.points>0)state.players[i].success++});
  state.round++;state.bidsFrozen=false;state.draft=makeDraft();
@@ -163,9 +220,9 @@ $('saveRound').addEventListener('click',()=>{
 });
 function finishGame(){state.completed=true;state.completedAt=new Date().toISOString();const completed={...state,players:state.players.map(p=>({...p})),rounds:state.rounds.map(r=>({...r,entries:r.entries.map(e=>({...e})),trump:{...r.trump}}))};history=loadHistory();history.unshift(completed);saveHistory();save();renderFinal();show('final')}
 function sortedPlayers(players){return [...players].sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name))}
-function leaderboardHTML(players){return sortedPlayers(players).map((p,i)=>'<div class="leader-row"><div class="rank">'+(['🥇','🥈','🥉'][i]||String(i+1))+'</div><div><div class="leader-name">'+esc(p.name)+'</div><div class="leader-meta">'+(p.success||0)+' successful match'+((p.success||0)===1?'':'es')+'</div></div><div class="leader-score">'+p.total+'<div class="total">pts</div></div></div>').join('')}
+function leaderboardHTML(players){return sortedPlayers(players).map((p,i)=>'<div class="leader-row '+(['highlight-winner','highlight-second','highlight-third'][i]||'')+'"><div class="rank">'+(['🥇','🥈','🥉'][i]||String(i+1))+'</div><div><div class="leader-name">'+esc(p.name)+'</div><div class="leader-meta">'+(p.success||0)+' successful match'+((p.success||0)===1?'':'es')+'</div></div><div class="leader-score">'+p.total+'<div class="total">pts</div></div></div>').join('')}
 function renderLeaderboard(){ $('leaderboard').innerHTML=leaderboardHTML(state.players)}
-function renderFinal(){$('finalLeaderboard').innerHTML=leaderboardHTML(state.players)}
+function renderFinal(){$('finalLeaderboard').innerHTML=leaderboardHTML(state.players);$('sharePreview').textContent=buildShareText()}
 function dateText(iso){try{return new Date(iso).toLocaleString()}catch(e){return iso||''}}
 function openHistory(){history=loadHistory();renderHistory();show('history')}
 function renderHistory(){
