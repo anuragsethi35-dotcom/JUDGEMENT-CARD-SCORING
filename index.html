@@ -67,7 +67,7 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
 
  <section id="historyDetail" class="screen">
   <div class="hero"><h1 id="detailTitle">Game details</h1><p id="detailMeta"></p></div>
-  <div class="card"><button id="detailBack" class="secondary" type="button">← Back to History</button><div class="label" style="margin-top:16px">Final leaderboard</div><div id="detailLeaderboard"></div></div>
+  <div class="card"><button id="detailBack" class="secondary" type="button">← Back to History</button><div class="actions" style="margin-top:10px"><button id="detailShareWhatsApp" class="primary" type="button">Share Results on WhatsApp</button><button id="detailCopyResults" class="secondary" type="button">Copy Results</button></div><div class="label" style="margin-top:16px">Final leaderboard</div><div id="detailLeaderboard"></div></div>
   <div class="card"><div class="label">Round-by-round scores</div><div id="roundDetails" class="table-wrap"></div></div>
  </section>
 
@@ -224,15 +224,29 @@ function leaderboardHTML(players){return sortedPlayers(players).map((p,i)=>'<div
 function renderLeaderboard(){ $('leaderboard').innerHTML=leaderboardHTML(state.players)}
 function renderFinal(){$('finalLeaderboard').innerHTML=leaderboardHTML(state.players);$('sharePreview').textContent=buildShareText()}
 function dateText(iso){try{return new Date(iso).toLocaleString()}catch(e){return iso||''}}
+function buildShareTextForGame(game){
+ const ordered=sortedPlayers(game.players||[]),medals=['🥇 WINNER','🥈 SECOND PLACE','🥉 THIRD PLACE'];
+ const lines=['🃏 JUDGEMENT CARD SCORING',game.name||'Completed game',dateText(game.completedAt||game.createdAt),''];
+ ordered.forEach((p,i)=>lines.push((medals[i]||('#'+(i+1)))+' — '+p.name+': '+(p.total||0)+' points'));
+ lines.push('','Round-wise scores:');
+ lines.push('Round | '+(game.players||[]).map(p=>p.name).join(' | '));
+ (game.rounds||[]).forEach((r,ri)=>lines.push((r.round||ri+1)+' ('+r.cards+' cards) | '+(r.entries||[]).map(e=>e.points??0).join(' | ')));
+ return lines.join('\n');
+}
+function getHistoryGame(id){const games=loadHistory();return games.find(g=>g.id===id)}
+function shareHistoryGame(id){const game=getHistoryGame(id);if(!game){alert('This game was not found in history.');return}const text=buildShareTextForGame(game);window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank')}
+async function copyHistoryGame(id){const game=getHistoryGame(id);if(!game){alert('This game was not found in history.');return}const text=buildShareTextForGame(game);try{await navigator.clipboard.writeText(text);alert('Results copied. You can paste them into WhatsApp.')}catch(e){const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();try{document.execCommand('copy');alert('Results copied. You can paste them into WhatsApp.')}catch(err){alert('Copy was blocked. Please open View details and copy the results manually.')}area.remove()}}
 function openHistory(){history=loadHistory();renderHistory();show('history')}
 function renderHistory(){
  if(!history.length){$('historyList').innerHTML='<p class="notice">No completed games saved yet. Completed games will appear here automatically.</p>';return}
- $('historyList').innerHTML=history.map(g=>'<div class="history-item"><div class="history-top"><div><div class="history-title">'+esc(g.name||'Unnamed game')+'</div><div class="history-date">'+esc(dateText(g.completedAt||g.createdAt))+' • '+g.players.length+' players • '+g.rounds.length+' rounds</div></div><strong>'+Math.max(...g.players.map(p=>p.total||0))+' pts</strong></div><div class="history-actions"><button class="secondary view-history" data-id="'+esc(g.id)+'" type="button">View details</button></div></div>').join('');
+ $('historyList').innerHTML=history.map(g=>'<div class="history-item"><div class="history-top"><div><div class="history-title">'+esc(g.name||'Unnamed game')+'</div><div class="history-date">'+esc(dateText(g.completedAt||g.createdAt))+' • '+g.players.length+' players • '+g.rounds.length+' rounds</div></div><strong>'+Math.max(...g.players.map(p=>p.total||0))+' pts</strong></div><div class="history-actions"><button class="secondary view-history" data-id="'+esc(g.id)+'" type="button">View details</button><button class="primary share-history" data-id="'+esc(g.id)+'" type="button">Share Results</button></div><div class="history-actions"><button class="secondary copy-history" data-id="'+esc(g.id)+'" type="button">Copy Results Text</button></div></div>').join('');
  document.querySelectorAll('.view-history').forEach(b=>b.addEventListener('click',()=>openHistoryDetail(b.dataset.id)));
+ document.querySelectorAll('.share-history').forEach(b=>b.addEventListener('click',()=>shareHistoryGame(b.dataset.id)));
+ document.querySelectorAll('.copy-history').forEach(b=>b.addEventListener('click',()=>copyHistoryGame(b.dataset.id)));
 }
 function openHistoryDetail(id){
  history=loadHistory();const g=history.find(x=>x.id===id);if(!g){alert('This game was not found in history.');openHistory();return}
- detailGameId=id;$('detailTitle').textContent=g.name||'Unnamed game';$('detailMeta').textContent=dateText(g.completedAt||g.createdAt)+' • '+g.players.length+' players • '+g.rounds.length+' rounds';$('detailLeaderboard').innerHTML=leaderboardHTML(g.players);
+ detailGameId=id;$('detailShareWhatsApp').onclick=()=>shareHistoryGame(id);$('detailCopyResults').onclick=()=>copyHistoryGame(id);$('detailTitle').textContent=g.name||'Unnamed game';$('detailMeta').textContent=dateText(g.completedAt||g.createdAt)+' • '+g.players.length+' players • '+g.rounds.length+' rounds';$('detailLeaderboard').innerHTML=leaderboardHTML(g.players);
  const names=g.players.map(p=>p.name);
  $('roundDetails').innerHTML='<table><thead><tr><th>Round</th><th>Cards</th><th>Type</th><th>Trump</th>'+names.map(n=>'<th>'+esc(n)+' (B/A/P)</th>').join('')+'</tr></thead><tbody>'+g.rounds.map((r,ri)=>'<tr><td>'+(ri+1)+'</td><td>'+r.cards+'</td><td>'+(r.blind?'Blind':r.direction==='down'?'Descending':'Ascending')+'</td><td>'+esc(SUITS[r.trump.suit].name+' '+RANKS[r.trump.rank])+'</td>'+r.entries.map(e=>'<td>'+e.bid+'/'+e.actual+'/'+e.points+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
  show('historyDetail');
