@@ -95,7 +95,7 @@ function loadHistory(){try{const h=JSON.parse(localStorage.getItem(HISTORY_KEY))
 function saveHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){alert('Could not save game history. Browser storage may be full.')}}
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 function cardsForPlayerCount(n){return Math.floor(52/n)}
-function makeSchedule(n){const max=cardsForPlayerCount(n),down=[];for(let c=max;c>=1;c--)down.push({cards:c,blind:false,direction:'down'});const blind=[{cards:1,blind:true,direction:'blind'}],up=[];for(let c=1;c<=max;c++)up.push({cards:c,blind:false,direction:'up'});return down.concat(blind,up)}
+function makeSchedule(n){const max=cardsForPlayerCount(n),down=[],up=[];if(n===8){down.push({cards:6,blind:false,direction:'down'},{cards:6,blind:false,direction:'down'});for(let c=5;c>=1;c--)down.push({cards:c,blind:false,direction:'down'});const blind=[{cards:1,blind:true,direction:'blind'}];for(let c=1;c<=5;c++)up.push({cards:c,blind:false,direction:'up'});up.push({cards:6,blind:false,direction:'up'},{cards:6,blind:false,direction:'up'});return down.concat(blind,up)}for(let c=max;c>=1;c--)down.push({cards:c,blind:false,direction:'down'});const blind=[{cards:1,blind:true,direction:'blind'}];for(let c=1;c<=max;c++)up.push({cards:c,blind:false,direction:'up'});return down.concat(blind,up)}
 function currentRound(){return state.schedule[state.round]}
 function deck(){const d=[];SUITS.forEach((s,si)=>RANKS.forEach((r,ri)=>d.push({suit:si,rank:ri})));return d}
 function shuffled(d){for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
