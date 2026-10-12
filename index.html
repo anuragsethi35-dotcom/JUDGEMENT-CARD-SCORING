@@ -213,15 +213,14 @@ function saveDraftQuietly(){try{localStorage.setItem(KEY,JSON.stringify(state));
 function updateBidSum(){
  const bids=state.draft.map(d=>d.bid).filter(v=>v!==''&&Number.isInteger(Number(v))&&Number(v)>=0);
  const sum=bids.reduce((s,v)=>s+Number(v),0),cards=currentRound().cards,complete=bids.length===state.players.length,blocked=complete&&sum===cards;
- const over=sum>cards;
+ // The only forbidden total is exactly equal to the cards dealt. Higher or lower totals are allowed.
  $('bidSum').textContent=(complete?'TOTAL BID: ':'BIDS ENTERED: ')+sum+' / '+cards+' cards';
- $('bidSum').className='bid-sum '+((blocked||over)?'warn':complete?'ok':'');
+ $('bidSum').className='bid-sum '+(blocked?'warn':complete?'ok':'');
  $('freezeBids').disabled=state.bidsFrozen||!complete||state.draft.some(d=>d.bid===''||!validValue(d.bid)||Number(d.bid)>cards);
  $('saveRound').disabled=!state.bidsFrozen;
  if($('unfreezeBids'))$('unfreezeBids').classList.toggle('hidden',!state.bidsFrozen);$('unfreezeBidsBottom').classList.toggle('hidden',!state.bidsFrozen);
- if(!state.bidsFrozen&&(blocked||over)){if(!bidWarningActive)beep();bidWarningActive=true;}else bidWarningActive=false;
+ if(!state.bidsFrozen&&blocked){if(!bidWarningActive)beep();bidWarningActive=true;}else bidWarningActive=false;
  if(blocked){$('freezeNote').textContent='INVALID BID TOTAL: bids equal '+cards+' cards. Change one or more bids before freezing.';$('freezeNote').style.color='#ff8792'}
- else if(over){$('freezeNote').textContent='CHECK BID TOTAL: bids currently exceed '+cards+' cards. Verify the entries.';$('freezeNote').style.color='#ff8792'}
  else{$('freezeNote').style.color='';$('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid. Total bids must not equal '+cards+' cards. The large total above updates as you change each bid.'}
 }
 function updateActualSum(allowBeep=true){
