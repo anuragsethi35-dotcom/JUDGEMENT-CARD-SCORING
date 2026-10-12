@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#080b12">
+<meta name="theme-color" content="#f4f7fb" id="themeColorMeta">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Judgement">
@@ -28,6 +28,33 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
 .notice{font-size:12px;color:var(--muted);line-height:1.5;margin-top:10px}.hidden{display:none!important}.history-item{border:1px solid var(--line);background:#0b111b;border-radius:14px;padding:13px;margin-top:9px}.history-top{display:flex;justify-content:space-between;gap:8px;align-items:start}.history-title{font-weight:850;overflow-wrap:anywhere}.history-date{font-size:11px;color:var(--muted);margin-top:4px}.history-actions{display:flex;gap:8px;margin-top:10px}.history-actions button{flex:1}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px;min-width:520px}th,td{border-bottom:1px solid #283146;padding:9px 8px;text-align:left;white-space:nowrap}th{color:#cfc6ff}
 .name-row{position:relative}.name-row input{flex:1}.name-pick{max-width:42%;background:#121927;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 7px;font-size:12px}.suggestions{position:absolute;z-index:20;left:35px;right:0;top:calc(100% - 2px);background:#111827;border:1px solid #46506a;border-radius:10px;max-height:190px;overflow:auto;box-shadow:var(--shadow)}.suggestions button{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid #263044;color:var(--text);padding:11px;font-size:14px}.suggestions button:last-child{border-bottom:0}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.panel-head .label{margin-bottom:0}.highlight-winner{border-color:#8a6a24;background:linear-gradient(110deg,rgba(218,165,32,.16),rgba(22,29,43,.96))}.highlight-second{border-color:#596578}.highlight-third{border-color:#78543d}.share-text{white-space:pre-wrap;overflow-wrap:anywhere;background:#0b111b;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:13px;line-height:1.5}
 
+
+/* Version 7: readable themes, high-contrast controls and alternate layout */
+:root{--bg:#f4f7fb;--line:#cbd5e1;--text:#172033;--muted:#536176;--accent:#5145cd;--green:#087f68;--red:#c6283d;--shadow:0 8px 24px rgba(15,23,42,.09)}
+body{background:linear-gradient(180deg,#edf2f9 0,#f8fafc 45%,#eef2f7 100%);color:var(--text)}
+.card{background:#fff;border-color:var(--line);box-shadow:var(--shadow)}
+.badge,.secondary,.count,.trump,.statusline,.player,.history-item,.share-text{background:#f1f5f9;color:var(--text);border-color:#cbd5e1}
+.count.selected{background:#e7e5ff;border-color:var(--accent)}
+input,select{background:#fff!important;color:#172033!important;border-color:#b8c4d6!important}
+.primary{background:linear-gradient(135deg,#5145cd,#3730a3);color:#fff;box-shadow:0 5px 12px rgba(55,48,163,.2)}
+.secondary{background:#e8edf5;color:#172033;border:1px solid #aab7ca}
+.secondary:hover,.count:hover{background:#dce5f1}
+.danger{color:#a5162b;border-color:#e6a4ad;background:#fff0f2}
+.success-btn{border-color:#70b7a8;background:#e5f7f2;color:#075f50}
+.statusline strong{color:#4338a8}.bid-sum.ok{color:#087f68}.bid-sum.warn{color:#c6283d}
+.suggestions{background:#fff;border-color:#aab7ca}.suggestions button{color:#172033;border-color:#dbe2ec}.suggestions button:hover{background:#edf2f9}
+th{color:#3730a3}th,td{border-color:#d8e0eb}.leader-row{border-color:#d8e0eb}.highlight-winner{background:#fff8df;border-color:#d5a62e}.highlight-second{background:#f1f5f9;border-color:#94a3b8}.highlight-third{background:#fff1e8;border-color:#c08457}
+.result.success{background:#e4f8f1;color:#087f68}.result.fail{background:#fff0f2;color:#b42338}.locked-note{color:#4338a8}
+.theme-dark{--bg:#080b12;--line:#263044;--text:#f5f7fb;--muted:#8e9ab0;--accent:#7c5cff;--green:#19d3ae;--red:#ff5263;--shadow:0 18px 50px rgba(0,0,0,.32);background:radial-gradient(circle at 50% -10%,#1a2140 0,#080b12 42%);color:var(--text)}
+.theme-dark .card{background:linear-gradient(145deg,rgba(22,29,43,.96),rgba(12,17,27,.96));border-color:#263044}.theme-dark .badge,.theme-dark .secondary,.theme-dark .count,.theme-dark .trump,.theme-dark .statusline,.theme-dark .player,.theme-dark .history-item,.theme-dark .share-text{background:#121927;color:#f5f7fb;border-color:#263044}.theme-dark input,.theme-dark select{background:#0b111b!important;color:#f5f7fb!important;border-color:#263044!important}.theme-dark .secondary{background:#121927;color:#f5f7fb;border-color:#263044}.theme-dark .count{background:#0d131f}.theme-dark .count.selected{background:rgba(124,92,255,.14)}.theme-dark .suggestions{background:#111827;border-color:#46506a}.theme-dark .suggestions button{color:#f5f7fb;border-color:#263044}.theme-dark th{color:#cfc6ff}.theme-dark th,.theme-dark td,.theme-dark .leader-row{border-color:#283146}.theme-dark .highlight-winner{background:linear-gradient(110deg,rgba(218,165,32,.16),rgba(22,29,43,.96));border-color:#8a6a24}.theme-dark .highlight-second{background:#121927;border-color:#596578}.theme-dark .highlight-third{background:#1b1715;border-color:#78543d}.theme-dark .result.success{background:rgba(25,211,174,.1);color:#5ce4c7}.theme-dark .result.fail{background:rgba(255,82,99,.1);color:#ff8792}.theme-dark .locked-note{color:#cfc6ff}.theme-dark .statusline strong{color:#dcd4ff}.theme-dark .primary{background:linear-gradient(135deg,#7c5cff,#5b43dc)}
+.theme-blue{--bg:#eaf4ff;--line:#b5cde7;--text:#102a43;--muted:#486581;--accent:#1769aa;--green:#087f68;--red:#c6283d;--shadow:0 8px 24px rgba(16,42,67,.10);background:linear-gradient(180deg,#dceeff,#f5faff);color:var(--text)}
+.theme-blue .card{background:#fff;border-color:#b5cde7}.theme-blue .badge,.theme-blue .secondary,.theme-blue .count,.theme-blue .trump,.theme-blue .statusline,.theme-blue .player,.theme-blue .history-item,.theme-blue .share-text{background:#edf6ff;color:#102a43;border-color:#b5cde7}.theme-blue input,.theme-blue select{background:#fff!important;color:#102a43!important;border-color:#b5cde7!important}.theme-blue .primary{background:linear-gradient(135deg,#1769aa,#0b4f83)}.theme-blue .secondary{background:#e5f1fc;color:#102a43}.theme-blue th{color:#1769aa}
+.settings-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.settings-row label{font-size:12px;font-weight:800;color:var(--muted)}.settings-row select{border:1px solid var(--line);border-radius:10px;padding:10px;max-width:100%}
+.players.freeze-below{margin-bottom:12px}.freeze-bottom{margin-top:12px;padding:14px;border:1px solid var(--line);border-radius:16px;background:rgba(127,145,170,.08)}.freeze-bottom .primary,.freeze-bottom .secondary{width:100%;margin-top:7px}
+.layout-landscape .app{max-width:1200px}.layout-landscape #players{grid-template-columns:repeat(2,minmax(0,1fr))}.layout-landscape .game-head{grid-template-columns:1fr auto}.layout-landscape .hero h1{font-size:30px}.layout-landscape .player{padding:10px}.layout-landscape .fields{grid-template-columns:1fr 1fr}
+.subscreen-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}.subscreen-head h2{margin:0;font-size:23px}.subscreen-head .secondary{white-space:nowrap}
+@media(max-width:480px){.layout-landscape .app{padding-left:8px;padding-right:8px}.layout-landscape #players{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.layout-landscape .player{padding:8px}.layout-landscape .pname{font-size:13px}.layout-landscape .numinput{font-size:16px}.layout-landscape .fields{gap:5px}.layout-landscape .actions{gap:6px}.layout-landscape .secondary,.layout-landscape .primary{font-size:12px;padding:10px 7px}}
+
 @media(max-width:480px){.hero h1{font-size:32px}.game-head{grid-template-columns:1fr}.trump{width:max-content}.card{padding:14px}.actions{grid-template-columns:1fr 1fr}.fields{gap:7px}.numinput{padding:10px 5px}}
 </style>
 </head>
@@ -38,6 +65,7 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
  <section id="setup" class="screen active">
   <div class="hero"><h1>Ready to deal?</h1><p>Bid first. Freeze the bids and trump. Play the round, then enter actual tricks.</p></div>
   <div class="card"><div class="label">Game name (optional)</div><input id="gameName" maxlength="60" placeholder="e.g. Sunday Club Game"></div>
+  <div class="card"><div class="label">Display preferences</div><div class="settings-row"><label for="themeSelect">Theme</label><select id="themeSelect"><option value="light">Light</option><option value="blue">Blue</option><option value="dark">Dark</option></select><label for="layoutSelect">Layout</label><select id="layoutSelect"><option value="portrait">Portrait</option><option value="landscape">Landscape / compact</option></select></div><div class="notice">Landscape layout arranges player cards side-by-side. For true landscape orientation, rotate your phone and unlock Rotation Lock if needed.</div></div>
   <div class="card"><div class="label">Players</div><div class="counts"><button class="count" data-count="6" type="button">6 Players</button><button class="count" data-count="7" type="button">7 Players</button><button class="count" data-count="8" type="button">8 Players</button></div></div>
   <div class="card"><div class="label">Player names</div><div id="nameInputs" class="names"></div><div class="actions"><button id="saveNameList" class="secondary" type="button">Save Player List</button><button id="clearSavedNames" class="secondary" type="button">Manage Saved Names</button></div><div id="savedNamesNote" class="notice">Save names once; they will be available in the name dropdown on future games.</div><div class="notice">Rounds are based on the maximum cards that fit in a 52-card deck.</div></div>
   <div class="card"><button id="startBtn" class="primary" type="button">Start New Game</button><div class="actions"><button id="resumeBtn" class="secondary hidden" type="button">Resume Current Game</button><button id="historyBtn" class="secondary" type="button">Game History</button></div><button id="clearCurrentBtn" class="secondary danger hidden" style="width:100%;margin-top:9px" type="button">Discard Current Game</button></div>
@@ -46,19 +74,21 @@ input{width:100%;min-width:0;background:#0b111b;border:1px solid var(--line);bor
  <section id="game" class="screen">
   <div class="card">
    <div class="actions" style="margin-top:0;margin-bottom:13px"><button id="backSetup" class="secondary" type="button">← Back to Setup</button><button id="showHistory" class="secondary" type="button">Game History</button></div>
-   <div class="game-head"><div><div class="round-title" id="roundTitle"></div><div class="sub" id="roundSub"></div><div class="sub" id="gameTitleDisplay"></div></div><div class="trump"><div class="suit" id="trumpSuit">♠</div><div><strong id="trumpName">Spade</strong><small id="trumpCard"></small></div></div></div>
-   <div class="actions"><button id="changeTrump" class="secondary" type="button">Change Trump</button><button id="resetRound" class="secondary" type="button">Reset Round</button><button id="freezeBids" class="primary wide" type="button">Freeze Bids &amp; Trump</button><button id="editNamesBtn" class="secondary" type="button">Edit Player Names</button><button id="roundScoresBtn" class="secondary" type="button">Round Scorecard</button><button id="playerHistoryBtn" class="secondary" type="button">Player History</button></div>
+   <div class="game-head"><div><div class="round-title" id="roundTitle"></div><div class="sub" id="roundSub"></div><div class="sub" id="gameTitleDisplay"></div></div><div class="trump"><div class="suit" id="trumpSuit">♠</div><div><strong>Trump suit</strong><select id="trumpSelect" aria-label="Choose trump suit" style="display:block;margin-top:5px;padding:7px;border-radius:8px"><option value="0">♠ Spade</option><option value="3">♣ Club</option><option value="1">♥ Heart</option><option value="2">♦ Diamond</option></select></div></div></div>
+   <div class="actions"><button id="changeTrump" class="secondary" type="button">Change Trump</button><button id="resetRound" class="secondary" type="button">Reset Round</button><button id="editNamesBtn" class="secondary" type="button">Edit Player Names</button><button id="roundScoresBtn" class="secondary" type="button">Round Scorecard</button><button id="playerHistoryBtn" class="secondary" type="button">Player History</button></div>
    <div id="bidStatus" class="statusline"><span>Bid total</span><strong id="bidSum" class="bid-sum">0</strong></div>
    <div id="actualStatus" class="statusline hidden" aria-live="polite"><span id="actualStatusText">Actual tricks total</span><strong id="actualSum" class="bid-sum">0</strong></div>
    <div id="freezeNote" class="locked-note">Enter every bid. The total bid must not equal the cards dealt per player. Freeze bids before playing.</div>
   </div>
   <div id="players" class="players"></div>
-  <div class="card"><button id="saveRound" class="primary" type="button">Save Actual Scores &amp; Continue</button><div class="notice">Actual scores can be entered only after bids and trump are frozen.</div></div>
-  <div id="editNamesPanel" class="card hidden"><div class="panel-head"><div class="label">Edit player names</div><button id="cancelEditNames" class="secondary" type="button">Close</button></div><p class="notice">Names can be changed or replaced at any time. Existing scores stay exactly the same.</p><div id="gameNameInputs" class="names"></div><button id="saveEditedNames" class="primary" style="margin-top:12px" type="button">Save Names</button></div>
-  <div id="roundScoresPanel" class="card hidden"><div class="panel-head"><div class="label">Round scorecard</div><button id="closeRoundScores" class="secondary" type="button">Close</button></div><div id="roundScoresTable" class="table-wrap" style="margin-top:12px"></div></div>
-  <div id="playerHistoryPanel" class="card hidden"><div class="panel-head"><div class="label">Player history</div><button id="closePlayerHistory" class="secondary" type="button">Close</button></div><label for="playerHistorySelect" class="notice">Choose a player to see previous results</label><select id="playerHistorySelect" style="width:100%;margin-top:8px;background:#0b111b;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px"></select><div id="playerHistoryResults" style="margin-top:12px"></div></div>
+  <div class="card freeze-bottom"><div class="notice">Freeze is placed below the last player so you do not need to scroll back up.</div><button id="freezeBids" class="primary" type="button">Freeze Bids &amp; Trump</button><button id="unfreezeBidsBottom" class="secondary hidden" type="button">Unfreeze Bids to Edit</button></div>
+  <div class="card"><button id="saveRound" class="primary" type="button" disabled>Save Actual Scores &amp; Continue</button><div class="notice">Actual scores can be entered only after bids and trump are frozen.</div></div>
   <div class="card"><div class="label">Leaderboard</div><div id="leaderboard"></div></div>
  </section>
+
+ <section id="editNamesScreen" class="screen"><div class="subscreen-head"><button id="cancelEditNames" class="secondary" type="button">← Back</button><h2>Edit player names</h2></div><div class="card"><p class="notice">Names can be changed or replaced at any time. Existing scores stay exactly the same.</p><div id="gameNameInputs" class="names"></div><button id="saveEditedNames" class="primary" style="margin-top:12px" type="button">Save Names</button></div></section>
+ <section id="roundScoresScreen" class="screen"><div class="subscreen-head"><button id="closeRoundScores" class="secondary" type="button">← Back</button><h2>Round scorecard</h2></div><div class="card"><div id="roundScoresTable" class="table-wrap"></div></div></section>
+ <section id="playerHistoryScreen" class="screen"><div class="subscreen-head"><button id="closePlayerHistory" class="secondary" type="button">← Back</button><h2>Player history</h2></div><div class="card"><label for="playerHistorySelect" class="notice">Choose a player to see previous results</label><select id="playerHistorySelect" style="width:100%;margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:12px"></select><div id="playerHistoryResults" style="margin-top:12px"></div></div></section>
 
  <section id="history" class="screen">
   <div class="hero"><h1>Game history</h1><p>Completed games are saved on this device so you can review them later.</p></div>
@@ -99,7 +129,7 @@ function makeSchedule(n){const max=cardsForPlayerCount(n),down=[],up=[];if(n===8
 function currentRound(){return state.schedule[state.round]}
 function deck(){const d=[];SUITS.forEach((s,si)=>RANKS.forEach((r,ri)=>d.push({suit:si,rank:ri})));return d}
 function shuffled(d){for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}return d}
-function randomTrump(){const dealt=state.players.length*currentRound().cards;const d=shuffled(deck());state.trump=d[Math.min(dealt,d.length-1)];}
+function randomTrump(){state.trump={suit:Math.floor(Math.random()*SUITS.length),rank:Math.floor(Math.random()*RANKS.length)};}
 function loadSavedNames(){try{const x=JSON.parse(localStorage.getItem(NAMES_KEY));return Array.isArray(x)?x.filter(Boolean):[]}catch(e){return []}}
 function saveSavedNames(list){const cleaned=[...new Set(list.map(x=>String(x||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));try{localStorage.setItem(NAMES_KEY,JSON.stringify(cleaned));return true}catch(e){alert('Could not save player names on this device.');return false}}
 function addNamesToSaved(list){return saveSavedNames(loadSavedNames().concat(list))}
@@ -129,16 +159,16 @@ $('historyBtn').addEventListener('click',openHistory);$('showHistory').addEventL
 $('historyBack').addEventListener('click',()=>{const s=load();if(s&&s.version===2&&!s.completed){state=s;renderGame();show('game')}else show('setup')});
 $('detailBack').addEventListener('click',openHistory);
 function renderGame(){
- ['editNamesPanel','roundScoresPanel','playerHistoryPanel'].forEach(id=>$(id).classList.add('hidden'));
+
  if(!state||state.completed){renderFinal();show('final');return}
  const round=currentRound();if(!round){finishGame();return}
  const cards=round.cards,totalDealt=state.players.length*cards,remaining=52-totalDealt;
  $('roundTitle').textContent='Round '+(state.round+1)+' of '+state.schedule.length+(round.blind?' • BLIND ROUND':'');
  $('roundSub').textContent=cards+' card'+(cards===1?'':'s')+' each • '+totalDealt+' dealt • '+remaining+' undealt'+(round.blind?' • Players bid without seeing their card':'');
  $('gameTitleDisplay').textContent=state.name?'Game: '+state.name:'Unnamed game';
- const s=SUITS[state.trump.suit];$('trumpSuit').textContent=s.symbol;$('trumpSuit').className='suit '+s.cls;$('trumpName').textContent=s.name;$('trumpCard').textContent=RANKS[state.trump.rank]+' of '+s.name;
- $('changeTrump').disabled=state.bidsFrozen;$('freezeBids').disabled=state.bidsFrozen;$('freezeBids').textContent=state.bidsFrozen?'Bids & Trump Frozen ✓':'Freeze Bids & Trump';
- $('changeTrump').textContent=state.bidsFrozen?'Trump Frozen':'Change Trump';
+ const s=SUITS[state.trump.suit];$('trumpSuit').textContent=s.symbol;$('trumpSuit').className='suit '+s.cls;$('trumpSelect').value=String(state.trump.suit);
+ $('changeTrump').classList.add('hidden');$('trumpSelect').disabled=state.bidsFrozen;$('freezeBids').disabled=state.bidsFrozen;$('freezeBids').textContent=state.bidsFrozen?'Bids & Trump Frozen ✓':'Freeze Bids & Trump';if($('unfreezeBids'))$('unfreezeBids').classList.toggle('hidden',!state.bidsFrozen);$('unfreezeBidsBottom').classList.toggle('hidden',!state.bidsFrozen);$('saveRound').disabled=!state.bidsFrozen;
+ 
  $('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.';
  $('actualStatus').classList.toggle('hidden',!state.bidsFrozen);actualWarningActive=false;
  $('players').innerHTML=state.players.map((p,i)=>{const d=state.draft[i]||{bid:'',actual:''};return '<div class="player" data-i="'+i+'"><div class="player-head"><div class="pname">'+esc(p.name)+'</div><div class="round-score" id="rs'+i+'">—</div></div><div class="fields"><div class="field"><label for="bid'+i+'">Bid</label><input id="bid'+i+'" class="numinput bid" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Bid" value="'+esc(d.bid)+'" '+(state.bidsFrozen?'disabled':'')+'></div><div class="field"><label for="actual'+i+'">Actual</label><input id="actual'+i+'" class="numinput actual" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Actual" value="'+esc(d.actual)+'" '+(!state.bidsFrozen?'disabled':'')+'></div></div><div class="result" id="result'+i+'"> '+(state.bidsFrozen?'Enter actual score':'Bid not frozen yet')+'</div></div>'}).join('');
@@ -147,7 +177,7 @@ function renderGame(){
  updateBidSum();updateActualSum(false);state.players.forEach((_,i)=>preview(i));renderLeaderboard();
 }
 function saveDraftQuietly(){try{localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Unsaved'}}
-function updateBidSum(){const bids=state.draft.map(d=>d.bid).filter(v=>v!==''&&Number.isInteger(Number(v))&&Number(v)>=0);const sum=bids.reduce((s,v)=>s+Number(v),0),cards=currentRound().cards,complete=bids.length===state.players.length,blocked=complete&&sum===cards;$('bidSum').textContent=(complete?'Total bids: ':'Entered: ')+sum+' / '+state.players.length+' players';$('bidSum').className='bid-sum '+(blocked?'warn':complete?'ok':'');$('freezeBids').disabled=state.bidsFrozen||!complete||state.draft.some(d=>d.bid===''||!validValue(d.bid)||Number(d.bid)>cards);if(blocked){$('freezeNote').textContent='Invalid total: all bids add up to '+cards+', which equals the cards per player. Change at least one bid before freezing.';$('freezeNote').style.color='#ff8792'}else{$('freezeNote').style.color='';$('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.'}}
+function updateBidSum(){const bids=state.draft.map(d=>d.bid).filter(v=>v!==''&&Number.isInteger(Number(v))&&Number(v)>=0);const sum=bids.reduce((s,v)=>s+Number(v),0),cards=currentRound().cards,complete=bids.length===state.players.length,blocked=complete&&sum===cards;$('bidSum').textContent=(complete?'Total bids: ':'Entered: ')+sum+' / '+state.players.length+' players';$('bidSum').className='bid-sum '+(blocked?'warn':complete?'ok':'');$('freezeBids').disabled=state.bidsFrozen||!complete||state.draft.some(d=>d.bid===''||!validValue(d.bid)||Number(d.bid)>cards);$('saveRound').disabled=!state.bidsFrozen;if($('unfreezeBids'))$('unfreezeBids').classList.toggle('hidden',!state.bidsFrozen);$('unfreezeBidsBottom').classList.toggle('hidden',!state.bidsFrozen);if(blocked){$('freezeNote').textContent='Invalid total: all bids add up to '+cards+', which equals the cards per player. Change at least one bid before freezing.';$('freezeNote').style.color='#ff8792'}else{$('freezeNote').style.color='';$('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.'}}
 function updateActualSum(allowBeep=true){
  if(!state||!state.bidsFrozen||!currentRound())return;
  const cards=currentRound().cards,values=state.draft.map(d=>d.actual),entered=values.filter(v=>v!==''&&validValue(v)&&Number(v)<=cards),sum=entered.reduce((n,v)=>n+Number(v),0),complete=entered.length===state.players.length,invalidField=values.some(v=>v!==''&&(!validValue(v)||Number(v)>cards));
@@ -174,13 +204,13 @@ $('freezeBids').addEventListener('click',()=>{
  if(sum===cards){alert('The total of all bids cannot equal '+cards+' cards. Change one or more bids, then freeze again.');return}
  state.bidsFrozen=true;save();renderGame();
 });
-$('editNamesBtn').addEventListener('click',()=>{renderEditNames();$('editNamesPanel').classList.remove('hidden')});
-$('cancelEditNames').addEventListener('click',()=>$('editNamesPanel').classList.add('hidden'));
-$('saveEditedNames').addEventListener('click',()=>{const names=[...$('gameNameInputs').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Player '+(i+1));names.forEach((name,i)=>state.players[i].name=name);addNamesToSaved(names);save();renderGame();$('editNamesPanel').classList.remove('hidden');renderEditNames();$('editNamesPanel').classList.remove('hidden');alert('Player names saved. All existing scores are unchanged.');});
-$('roundScoresBtn').addEventListener('click',()=>{renderRoundScorecard();$('roundScoresPanel').classList.remove('hidden')});
-$('closeRoundScores').addEventListener('click',()=>$('roundScoresPanel').classList.add('hidden'));
-$('playerHistoryBtn').addEventListener('click',()=>{renderPlayerHistorySelect();$('playerHistoryPanel').classList.remove('hidden')});
-$('closePlayerHistory').addEventListener('click',()=>$('playerHistoryPanel').classList.add('hidden'));
+$('editNamesBtn').addEventListener('click',()=>{syncDraftFromUI();save();renderEditNames();show('editNamesScreen')});
+$('cancelEditNames').addEventListener('click',()=>{renderGame();show('game')});
+$('saveEditedNames').addEventListener('click',()=>{const names=[...$('gameNameInputs').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Player '+(i+1));names.forEach((name,i)=>state.players[i].name=name);addNamesToSaved(names);save();renderGame();show('game');alert('Player names saved. All existing scores are unchanged.');});
+$('roundScoresBtn').addEventListener('click',()=>{syncDraftFromUI();save();renderRoundScorecard();show('roundScoresScreen')});
+$('closeRoundScores').addEventListener('click',()=>{renderGame();show('game')});
+$('playerHistoryBtn').addEventListener('click',()=>{syncDraftFromUI();save();renderPlayerHistorySelect();show('playerHistoryScreen')});
+$('closePlayerHistory').addEventListener('click',()=>{renderGame();show('game')});
 $('playerHistorySelect').addEventListener('change',renderSelectedPlayerHistory);
 $('shareWhatsApp').addEventListener('click',()=>{const text=buildShareText();window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank')});
 $('copyResults').addEventListener('click',async()=>{const text=buildShareText();try{await navigator.clipboard.writeText(text);alert('Results copied. You can paste them into WhatsApp.')}catch(e){const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();try{document.execCommand('copy');alert('Results copied. You can paste them into WhatsApp.')}catch(err){alert('Copy was blocked. Please select and copy the results shown above.')}area.remove()}});
@@ -206,7 +236,10 @@ $('resetRound').addEventListener('click',()=>{
  else {if(!confirm('Clear all bids and actual entries for this round?'))return;state.draft=makeDraft()}
  save();renderGame();
 });
-$('changeTrump').addEventListener('click',()=>{if(state.bidsFrozen){alert('Trump is frozen with the bids and cannot be changed now.');return}randomTrump();save();renderGame()});
+$('changeTrump').addEventListener('click',()=>{});
+$('trumpSelect').addEventListener('change',()=>{if(!state||state.bidsFrozen){$('trumpSelect').value=String(state?.trump?.suit??0);return}state.trump.suit=Number($('trumpSelect').value);save();renderGame()});
+function unfreezeBids(){if(!state||!state.bidsFrozen)return;if(!confirm('Unfreeze bids? You can edit bids and trump again. Actual scores entered for this round will be cleared.'))return;state.bidsFrozen=false;state.draft.forEach(d=>d.actual='');save();renderGame()}
+$('unfreezeBidsBottom').addEventListener('click',unfreezeBids);
 $('saveRound').addEventListener('click',()=>{
  if(!state.bidsFrozen){alert('Freeze the bids and trump before entering/saving actual scores.');return}
  syncDraftFromUI();const cards=currentRound().cards,entries=[];
@@ -248,7 +281,7 @@ function openHistoryDetail(id){
  history=loadHistory();const g=history.find(x=>x.id===id);if(!g){alert('This game was not found in history.');openHistory();return}
  detailGameId=id;$('detailShareWhatsApp').onclick=()=>shareHistoryGame(id);$('detailCopyResults').onclick=()=>copyHistoryGame(id);$('detailTitle').textContent=g.name||'Unnamed game';$('detailMeta').textContent=dateText(g.completedAt||g.createdAt)+' • '+g.players.length+' players • '+g.rounds.length+' rounds';$('detailLeaderboard').innerHTML=leaderboardHTML(g.players);
  const names=g.players.map(p=>p.name);
- $('roundDetails').innerHTML='<table><thead><tr><th>Round</th><th>Cards</th><th>Type</th><th>Trump</th>'+names.map(n=>'<th>'+esc(n)+' (B/A/P)</th>').join('')+'</tr></thead><tbody>'+g.rounds.map((r,ri)=>'<tr><td>'+(ri+1)+'</td><td>'+r.cards+'</td><td>'+(r.blind?'Blind':r.direction==='down'?'Descending':'Ascending')+'</td><td>'+esc(SUITS[r.trump.suit].name+' '+RANKS[r.trump.rank])+'</td>'+r.entries.map(e=>'<td>'+e.bid+'/'+e.actual+'/'+e.points+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+ $('roundDetails').innerHTML='<table><thead><tr><th>Round</th><th>Cards</th><th>Type</th><th>Trump</th>'+names.map(n=>'<th>'+esc(n)+' (B/A/P)</th>').join('')+'</tr></thead><tbody>'+g.rounds.map((r,ri)=>'<tr><td>'+(ri+1)+'</td><td>'+r.cards+'</td><td>'+(r.blind?'Blind':r.direction==='down'?'Descending':'Ascending')+'</td><td>'+esc(SUITS[r.trump.suit].name)+'</td>'+r.entries.map(e=>'<td>'+e.bid+'/'+e.actual+'/'+e.points+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
  show('historyDetail');
 }
 function refreshSetup(){
@@ -256,6 +289,10 @@ function refreshSetup(){
  $('resumeBtn').classList.toggle('hidden',!valid);$('clearCurrentBtn').classList.toggle('hidden',!valid);
  if(valid){$('resumeBtn').textContent='Resume '+(s.name||'Current Game')+' — Round '+(s.round+1)+'/'+s.schedule.length}
 }
+const PREF_KEY='judgement_display_preferences_v1';
+function applyPreferences(){let prefs={theme:'light',layout:'portrait'};try{prefs={...prefs,...JSON.parse(localStorage.getItem(PREF_KEY)||'{}')}}catch(e){}document.body.classList.remove('theme-dark','theme-blue','layout-landscape');if(prefs.theme==='dark')document.body.classList.add('theme-dark');if(prefs.theme==='blue')document.body.classList.add('theme-blue');if(prefs.layout==='landscape')document.body.classList.add('layout-landscape');if($('themeSelect'))$('themeSelect').value=prefs.theme;if($('layoutSelect'))$('layoutSelect').value=prefs.layout;const meta=$('themeColorMeta');if(meta)meta.content=prefs.theme==='dark'?'#080b12':prefs.theme==='blue'?'#dceeff':'#f4f7fb'}
+function savePreferences(){const prefs={theme:$('themeSelect').value,layout:$('layoutSelect').value};try{localStorage.setItem(PREF_KEY,JSON.stringify(prefs))}catch(e){}applyPreferences()}
+$('themeSelect').addEventListener('change',savePreferences);$('layoutSelect').addEventListener('change',savePreferences);applyPreferences();
 const saved=load();history=loadHistory();
 if(saved&&saved.version===2&&!saved.completed){state=saved;document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));const b=document.querySelector('.count[data-count="'+saved.players.length+'"]');if(b){b.classList.add('selected');initNames(saved.players.length);[...$('nameInputs').querySelectorAll('input')].forEach((x,i)=>x.value=saved.players[i].name)}$('gameName').value=saved.name||''}
 else setupDefault();
