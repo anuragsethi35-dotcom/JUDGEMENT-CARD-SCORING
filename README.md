@@ -1,20 +1,21 @@
-# Judgement Card Scoring — Version 2
+# Judgement Card Scoring — Local Version 13
 
-## Update your existing GitHub Pages app
-1. Extract this ZIP on your computer.
-2. Open your GitHub repository `JUDGEMENT-CARD-SCORING`.
-3. Choose **Add file → Upload files**.
-4. Upload/replace `index.html`, `sw.js`, `manifest.webmanifest`, `icon-192.png`, and `icon-512.png` from this package. If GitHub asks to replace existing files, accept the replacements.
-5. Click **Commit changes**.
-6. Wait a minute, then open the Pages URL and refresh. If an old version remains, use Ctrl+F5 on PC; on iPhone close and reopen the Home Screen app or refresh Safari.
+This build removes Supabase, phone OTP, shared groups, and cloud sync. Each phone runs independently and stores its records in that device/browser.
 
-## Version 2 features
-- Back to setup button; unfinished round draft is saved locally.
-- Optional game name.
-- Round schedule uses maximum whole cards from a 52-card deck: 6 players = 8 down to 1, blind 1-card round, then 1 up to 8 (17 rounds); 7 players = max 7 (15 rounds); 8 players = max 6 (13 rounds).
-- Freeze Bids & Trump locks every bid and the trump. Actual scores are disabled until freeze.
-- Total bids cannot equal the cards dealt per player; the app prevents freezing in that case.
-- Scoring: matching bid/actual = 10 + actual × 11; mismatch = 0.
-- Completed games are saved in Game History with final leaderboard and round-by-round bid/actual/points.
-- Browser-local storage only; history is not synced between devices and can be erased if browser website data is cleared.
-- Trump is chosen from a shuffled 52-card deck after simulating the cards dealt to players. The blind round is labelled; the app cannot enforce players physically keeping their card unseen.
+## Publish to GitHub Pages
+1. Download and extract `judgement_card_scoring_v13_local_backup.zip`.
+2. Open the repository `https://github.com/anuragsethi35-dotcom/JUDGEMENT-CARD-SCORING`.
+3. Upload/replace the files in the ZIP at the repository root: `index.html`, `manifest.webmanifest`, `sw.js`, `icon-192.png`, and `icon-512.png`. Do not upload the old Supabase config/schema files; they are not used by this version.
+4. Commit the changes and wait for GitHub Pages to deploy.
+5. Open `https://anuragsethi35-dotcom.github.io/JUDGEMENT-CARD-SCORING/` and refresh. If the old screen persists, close the app, remove the Home Screen shortcut, reopen the URL, and add it to Home Screen again.
+
+## Backup and restore
+- On the setup screen, choose **Create Backup File**. This downloads a JSON backup of the current unfinished game, completed game history, saved player names, and display preferences.
+- Save/share that file into your own Google Drive. This step is manual; the app does not sign in to Google or access Drive directly.
+- On a new phone, open the app, download the backup file from Google Drive to the phone, tap **Restore Backup**, and select that JSON file.
+- Restore replaces the records on that phone, so back up that phone first if its records matter.
+
+## Notes
+- This is an installable Progressive Web App, not an App Store/Play Store native app.
+- Local data is tied to the browser on each device. Create backups regularly; clearing browser data or uninstalling may remove local records.
+- No account, domain, Twilio, Supabase, or SMTP configuration is needed.

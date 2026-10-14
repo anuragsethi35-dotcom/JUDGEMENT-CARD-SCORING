@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Judgement">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="manifest" href="./manifest.webmanifest">
-<title>Judgement — Card Scoring</title>
+<title>Judgement — Card Scoring (Local)</title>
 <style>
 :root{--bg:#080b12;--line:#263044;--text:#f5f7fb;--muted:#8e9ab0;--accent:#7c5cff;--green:#19d3ae;--red:#ff5263;--shadow:0 18px 50px rgba(0,0,0,.32)}
 *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:radial-gradient(circle at 50% -10%,#1a2140 0,#080b12 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh;padding-bottom:env(safe-area-inset-bottom)}
@@ -76,11 +76,16 @@ body.bid-total-floating #game{padding-bottom:115px}
 <body>
 <div class="app">
  <div class="topbar"><div class="brand">JUDGEMENT<span>•</span></div><div class="badge" id="saveStatus">Ready</div></div>
-
  <section id="setup" class="screen active">
   <div class="hero"><h1>Ready to deal?</h1><p>Bid first. Freeze the bids and trump. Play the round, then enter actual tricks.</p></div>
   <div class="card"><div class="label">Game name (optional)</div><input id="gameName" maxlength="60" placeholder="e.g. Sunday Club Game"></div>
   <div class="card"><div class="label">Display preferences</div><div class="settings-row"><label for="themeSelect">Theme</label><select id="themeSelect"><option value="light">Light</option><option value="blue">Blue</option><option value="dark">Dark</option></select><label for="layoutSelect">Layout</label><select id="layoutSelect"><option value="portrait">Portrait</option><option value="landscape">Landscape / compact</option></select></div><div class="notice">Landscape layout arranges player cards side-by-side. For true landscape orientation, rotate your phone and unlock Rotation Lock if needed.</div></div>
+  <div class="card" id="backupCard"><div class="label">Backup & restore</div>
+   <p class="notice">Your games are saved on this device. To move them to another phone, download a backup and save that file in your own Google Drive. On the new phone, open this app and choose the same backup file to restore.</p>
+   <div class="actions"><button id="exportBackupBtn" class="primary" type="button">Create Backup File</button><button id="importBackupBtn" class="secondary" type="button">Restore Backup</button></div>
+   <input id="backupFileInput" type="file" accept=".json,application/json" class="hidden" aria-label="Choose backup file">
+   <div id="backupMessage" class="notice" role="status">No login or cloud connection is required. Back up regularly to avoid losing records.</div>
+  </div>
   <div class="card"><div class="label">Players</div><div class="counts"><button class="count" data-count="6" type="button">6 Players</button><button class="count" data-count="7" type="button">7 Players</button><button class="count" data-count="8" type="button">8 Players</button></div></div>
   <div class="card"><div class="label">Player names</div><div id="nameInputs" class="names"></div><div class="actions"><button id="saveNameList" class="secondary" type="button">Save Player List</button><button id="clearSavedNames" class="secondary" type="button">Manage Saved Names</button></div><div id="savedNamesNote" class="notice">Save names once; they will be available in the name dropdown on future games.</div><div class="notice">Rounds are based on the maximum cards that fit in a 52-card deck.</div></div>
   <div class="card"><button id="startBtn" class="primary" type="button">Start New Game</button><div class="actions"><button id="resumeBtn" class="secondary hidden" type="button">Resume Current Game</button><button id="historyBtn" class="secondary" type="button">Game History</button></div><button id="clearCurrentBtn" class="secondary danger hidden" style="width:100%;margin-top:9px" type="button">Discard Current Game</button></div>
@@ -106,7 +111,7 @@ body.bid-total-floating #game{padding-bottom:115px}
  <section id="playerHistoryScreen" class="screen"><div class="subscreen-head"><button id="closePlayerHistory" class="secondary" type="button">← Back</button><h2>Player history</h2></div><div class="card"><label for="playerHistorySelect" class="notice">Choose a player to see previous results</label><select id="playerHistorySelect" style="width:100%;margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:12px"></select><div id="playerHistoryResults" style="margin-top:12px"></div></div></section>
 
  <section id="history" class="screen">
-  <div class="hero"><h1>Game history</h1><p>Completed games are saved on this device so you can review them later.</p></div>
+  <div class="hero"><h1>Game history</h1><p>Completed games are saved in this browser on this device. Use Backup & Restore on the setup screen to move records to another phone.</p></div>
   <div class="card"><button id="historyBack" class="secondary" type="button">← Back</button><div id="historyList" style="margin-top:12px"></div></div>
  </section>
 
@@ -151,7 +156,7 @@ const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let state=null, history=[], detailGameId=null;
 const $=id=>document.getElementById(id);
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('bid-total-floating',id==='game'&&!!state&&!state.bidsFrozen);window.scrollTo(0,0)}
-function save(){try{localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Save unavailable';alert('Browser storage is unavailable. Please do not close this page until the game is saved.')}}
+function save(){try{if(state&&'groupId' in state)delete state.groupId;localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Save unavailable';alert('Browser storage is unavailable. Please do not close this page until the game is saved.')}}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
 function loadHistory(){try{const h=JSON.parse(localStorage.getItem(HISTORY_KEY));return Array.isArray(h)?h:[]}catch(e){return []}}
 function saveHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){alert('Could not save game history. Browser storage may be full.')}}
@@ -356,6 +361,26 @@ refreshSetup();
  document.addEventListener('focusout',()=>setTimeout(updateKeyboardLift,250));
  updateKeyboardLift();
 })();
+// Backup contains only this app's local records and preferences. It is a file the user can store in Google Drive.
+function createBackup(){
+ const payload={format:'judgement-card-scoring-backup',version:1,createdAt:new Date().toISOString(),data:{current:localStorage.getItem(KEY),history:localStorage.getItem(HISTORY_KEY),names:localStorage.getItem(NAMES_KEY),preferences:localStorage.getItem(PREF_KEY)}};
+ const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='Judgement-Card-Backup-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ $('backupMessage').textContent='Backup file created. Save it to Google Drive (for example, using your phone’s Share or Files options). Keep the file safe.';
+}
+function chooseBackup(){$('backupFileInput').click()}
+$('exportBackupBtn').addEventListener('click',createBackup);$('importBackupBtn').addEventListener('click',chooseBackup);
+$('backupFileInput').addEventListener('change',async ev=>{
+ const file=ev.target.files&&ev.target.files[0];if(!file)return;
+ try{
+  const payload=JSON.parse(await file.text());if(payload.format!=='judgement-card-scoring-backup'||payload.version!==1||!payload.data)throw new Error('This does not look like a Judgement Card Scoring backup file.');
+  if(!confirm('Restore this backup? Existing game history, current game, saved names and preferences on this device will be replaced by the contents of the backup. Create a backup of this phone first if you want to keep its records.'))return;
+  const d=payload.data;[[KEY,d.current],[HISTORY_KEY,d.history],[NAMES_KEY,d.names],[PREF_KEY,d.preferences]].forEach(([k,v])=>{if(v===null||v===undefined)localStorage.removeItem(k);else localStorage.setItem(k,v)});
+  history=loadHistory();state=load();applyPreferences();refreshSetup();$('backupMessage').textContent='Backup restored successfully. The app has reloaded your saved records.';alert('Backup restored successfully.');
+  if(state&&!state.completed){const b=document.querySelector('.count[data-count="'+state.players.length+'"]');document.querySelectorAll('.count').forEach(x=>x.classList.remove('selected'));if(b)b.classList.add('selected');initNames(state.players.length);[...$('nameInputs').querySelectorAll('input')].forEach((x,i)=>x.value=state.players[i]?.name||'');$('gameName').value=state.name||'';}
+ }catch(err){alert('Could not restore this backup: '+(err.message||'Invalid file'));$('backupMessage').textContent='Restore failed. Your existing records were not intentionally changed if the file was invalid.'}
+ finally{ev.target.value=''}
+});
+
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 if(!window.matchMedia('(display-mode: standalone)').matches&&/iPhone|iPad|iPod/.test(navigator.userAgent)){$('saveStatus').textContent='Local save'}
 })();
