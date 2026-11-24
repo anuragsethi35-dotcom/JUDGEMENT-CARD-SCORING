@@ -71,6 +71,8 @@ body.bid-total-floating #bidStatus span{font-size:12px}
 body.bid-total-floating #bidStatus #bidSum{font-size:clamp(24px,4.8vw,34px)}
 body.bid-total-floating #game{padding-bottom:115px}
 @media(max-width:520px){body.bid-total-floating #bidStatus{bottom:calc(var(--keyboard-lift, 0px) + 8px + env(safe-area-inset-bottom))!important;width:calc(100vw - 16px);min-height:68px;padding:8px 10px}body.bid-total-floating #bidStatus #bidSum{font-size:27px}body.bid-total-floating #game{padding-bottom:105px}}
+
+body.actual-floating #actualStatus{position:fixed;bottom:calc(var(--keyboard-lift,0px) + 8px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(752px,calc(100vw - 16px));z-index:9999;margin:0;box-shadow:0 6px 20px #0004}body.actual-floating #game{padding-bottom:100px}#game .player{display:grid;grid-template-columns:minmax(75px,1fr) minmax(140px,1.5fr);align-items:center;gap:4px;padding:6px}#game .players{display:grid;grid-template-columns:1fr;gap:4px}#game .player-head{margin:0}#game .fields{gap:5px;margin:0}#game .field label{font-size:11px}#game .numinput,#game .actual{min-height:34px;padding:4px;font-size:16px;width:100%}#game .result{display:none}#game .card{padding:9px;margin-bottom:6px}#game .freeze-bottom .notice{display:none}#game .actions button{padding:7px;font-size:12px}#game .locked-note{font-size:12px}#printReport{display:none}@media print{body>*{display:none!important}body>#printReport{display:block!important;color:#000;background:#fff;font:12px Arial}#printReport section{display:block;break-inside:avoid}#printReport table{width:100%;border-collapse:collapse}#printReport td,#printReport th{border:1px solid #aaa;padding:5px;color:#000} }
 </style>
 </head>
 <body>
@@ -79,7 +81,7 @@ body.bid-total-floating #game{padding-bottom:115px}
  <section id="setup" class="screen active">
   <div class="hero"><h1>Ready to deal?</h1><p>Bid first. Freeze the bids and trump. Play the round, then enter actual tricks.</p></div>
   <div class="card"><div class="label">Game name (optional)</div><input id="gameName" maxlength="60" placeholder="e.g. Sunday Club Game"></div>
-  <div class="card"><div class="label">Display preferences</div><div class="settings-row"><label for="themeSelect">Theme</label><select id="themeSelect"><option value="light">Light</option><option value="blue">Blue</option><option value="dark">Dark</option></select><label for="layoutSelect">Layout</label><select id="layoutSelect"><option value="portrait">Portrait</option><option value="landscape">Landscape / compact</option></select></div><div class="notice">Landscape layout arranges player cards side-by-side. For true landscape orientation, rotate your phone and unlock Rotation Lock if needed.</div></div>
+  <div class="card"><div class="label">Scoring method</div><select id="scoringMethod"><option value="actual">Actual tricks</option><option value="passfail">Pass / Fail</option></select></div><div class="card"><div class="label">Display preferences</div><div class="settings-row"><label for="themeSelect">Theme</label><select id="themeSelect"><option value="light">Light</option><option value="blue">Blue</option><option value="dark">Dark</option></select><label for="layoutSelect">Layout</label><select id="layoutSelect"><option value="portrait">Portrait</option><option value="landscape">Landscape / compact</option></select></div><div class="notice">Landscape layout arranges player cards side-by-side. For true landscape orientation, rotate your phone and unlock Rotation Lock if needed.</div></div>
   <div class="card" id="backupCard"><div class="label">Backup & restore</div>
    <p class="notice">Your games are saved on this device. To move them to another phone, download a backup and save that file in your own Google Drive. On the new phone, open this app and choose the same backup file to restore.</p>
    <div class="actions"><button id="exportBackupBtn" class="primary" type="button">Create Backup File</button><button id="importBackupBtn" class="secondary" type="button">Restore Backup</button></div>
@@ -103,11 +105,11 @@ body.bid-total-floating #game{padding-bottom:115px}
   <div id="players" class="players"></div>
   <div class="card freeze-bottom"><div class="notice">Freeze is placed below the last player so you do not need to scroll back up.</div><button id="freezeBids" class="primary" type="button">Freeze Bids &amp; Trump</button><button id="unfreezeBidsBottom" class="secondary hidden" type="button">Unfreeze Bids to Edit</button></div>
   <div class="card"><button id="saveRound" class="primary" type="button" disabled>Save Actual Scores &amp; Continue</button><div class="notice">Actual scores can be entered only after bids and trump are frozen.</div></div>
-  <div class="card"><div class="label">Leaderboard</div><div id="leaderboard"></div></div>
+  <button id="liveBtn" class="secondary" type="button">Live scoreboard</button>
  </section>
 
- <section id="editNamesScreen" class="screen"><div class="subscreen-head"><button id="cancelEditNames" class="secondary" type="button">← Back</button><h2>Edit player names</h2></div><div class="card"><p class="notice">Names can be changed or replaced at any time. Existing scores stay exactly the same.</p><div id="gameNameInputs" class="names"></div><button id="saveEditedNames" class="primary" style="margin-top:12px" type="button">Save Names</button></div></section>
- <section id="roundScoresScreen" class="screen"><div class="subscreen-head"><button id="closeRoundScores" class="secondary" type="button">← Back</button><h2>Round scorecard</h2></div><div class="card"><div id="roundScoresTable" class="table-wrap"></div></div></section>
+ <section id="liveScreen" class="screen"><button id="liveBack" class="secondary">← Back</button><h2>Live scoreboard</h2><div class="card" id="leaderboard"></div></section><section id="editNamesScreen" class="screen"><div class="subscreen-head"><button id="cancelEditNames" class="secondary" type="button">← Back</button><h2>Edit player names</h2></div><div class="card"><p class="notice">Names can be changed or replaced at any time. Existing scores stay exactly the same.</p><div id="gameNameInputs" class="names"></div><button id="saveEditedNames" class="primary" style="margin-top:12px" type="button">Save Names</button></div></section>
+ <section id="roundScoresScreen" class="screen"><div class="subscreen-head"><button id="closeRoundScores" class="secondary" type="button">← Back</button><h2>Round scorecard</h2></div><div class="card"><div id="editPreviousArea"></div><div id="roundScoresTable" class="table-wrap"></div></div></section>
  <section id="playerHistoryScreen" class="screen"><div class="subscreen-head"><button id="closePlayerHistory" class="secondary" type="button">← Back</button><h2>Player history</h2></div><div class="card"><label for="playerHistorySelect" class="notice">Choose a player to see previous results</label><select id="playerHistorySelect" style="width:100%;margin-top:8px;border:1px solid var(--line);border-radius:12px;padding:12px"></select><div id="playerHistoryResults" style="margin-top:12px"></div></div></section>
 
  <section id="history" class="screen">
@@ -124,7 +126,7 @@ body.bid-total-floating #game{padding-bottom:115px}
  <section id="final" class="screen">
   <div class="hero"><h1>Game complete.</h1><p>All rounds have been scored and this game has been added to history.</p></div>
   <div class="card"><div class="label">Final leaderboard</div><div id="finalLeaderboard"></div></div>
-  <div class="card"><div class="label">Share results</div><div id="sharePreview" class="share-text"></div><button id="shareWhatsApp" class="primary" style="margin-top:10px" type="button">Share Final Score on WhatsApp</button><button id="copyResults" class="secondary" style="width:100%;margin-top:9px" type="button">Copy Results Text</button></div>
+  <div class="card"><div class="actions"><button id="finalRounds" class="secondary">Round-wise results</button><button id="finalPDF" class="secondary">Print / Save PDF</button><button id="finalPlayers" class="secondary">Player history</button></div><div class="label">Share results</div><div id="sharePreview" class="share-text"></div><button id="shareWhatsApp" class="primary" style="margin-top:10px" type="button">Share Final Score on WhatsApp</button><button id="copyResults" class="secondary" style="width:100%;margin-top:9px" type="button">Copy Results Text</button></div>
   <div class="card"><button id="newGame" class="primary" type="button">Start New Game</button><button id="finalHistory" class="secondary" style="width:100%;margin-top:9px" type="button">View Game History</button></div>
  </section>
 </div>
@@ -155,7 +157,7 @@ const SUITS=[{name:'Spade',symbol:'♠',cls:'spade'},{name:'Heart',symbol:'♥',
 const RANKS=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
 let state=null, history=[], detailGameId=null;
 const $=id=>document.getElementById(id);
-function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('bid-total-floating',id==='game'&&!!state&&!state.bidsFrozen);window.scrollTo(0,0)}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('bid-total-floating',id==='game'&&!!state&&!state.bidsFrozen);document.body.classList.toggle('actual-floating',id==='game'&&!!state&&state.bidsFrozen);window.scrollTo(0,0)}
 function save(){try{if(state&&'groupId' in state)delete state.groupId;localStorage.setItem(KEY,JSON.stringify(state));$('saveStatus').textContent='Saved ✓'}catch(e){$('saveStatus').textContent='Save unavailable';alert('Browser storage is unavailable. Please do not close this page until the game is saved.')}}
 function load(){try{return JSON.parse(localStorage.getItem(KEY))}catch(e){return null}}
 function loadHistory(){try{const h=JSON.parse(localStorage.getItem(HISTORY_KEY));return Array.isArray(h)?h:[]}catch(e){return []}}
@@ -182,7 +184,7 @@ function startNew(){
  const count=document.querySelector('.count.selected');if(!count){alert('Select 6, 7 or 8 players.');return}
  if(state&&state.players&&state.rounds&&state.round<state.schedule?.length&&!state.completed){if(!confirm('Start a new game? The current unfinished game will be kept as the current game only until you replace it.'))return}
  const players=collectPlayers(),schedule=makeSchedule(players.length);
- state={version:2,id:'game-'+Date.now(),name:$('gameName').value.trim(),createdAt:new Date().toISOString(),players,round:0,schedule,rounds:[],trump:null,bidsFrozen:false,draft:makeDraft(players),completed:false};
+ state={version:2,id:'game-'+Date.now(),name:$('gameName').value.trim(),createdAt:new Date().toISOString(),players,method:$('scoringMethod').value,round:0,schedule,rounds:[],trump:null,bidsFrozen:false,draft:makeDraft(players),completed:false};
  randomTrump();save();renderGame();show('game');
 }
 $('startBtn').addEventListener('click',startNew);
@@ -198,7 +200,7 @@ $('detailBack').addEventListener('click',openHistory);
 function renderGame(){
 
  if(!state||state.completed){document.body.classList.remove('bid-total-floating');renderFinal();show('final');return}
- document.body.classList.toggle('bid-total-floating',!state.bidsFrozen);
+ document.body.classList.toggle('bid-total-floating',!state.bidsFrozen);document.body.classList.toggle('actual-floating',state.bidsFrozen);
  const round=currentRound();if(!round){finishGame();return}
  const cards=round.cards,totalDealt=state.players.length*cards,remaining=52-totalDealt;
  $('roundTitle').textContent='Round '+(state.round+1)+' of '+state.schedule.length+(round.blind?' • BLIND ROUND':'');
@@ -210,6 +212,7 @@ function renderGame(){
  $('freezeNote').textContent=state.bidsFrozen?'Bids and trump are locked. Enter actual tricks after the round is played.':'Enter every bid first. The sum of all bids must not equal '+cards+' (the cards per player). Then freeze bids and trump before playing.';
  $('actualStatus').classList.toggle('hidden',!state.bidsFrozen);actualWarningActive=false;
  $('players').innerHTML=state.players.map((p,i)=>{const d=state.draft[i]||{bid:'',actual:''};return '<div class="player" data-i="'+i+'"><div class="player-head"><div class="pname">'+esc(p.name)+'</div><div class="round-score" id="rs'+i+'">—</div></div><div class="fields"><div class="field"><label for="bid'+i+'">Bid</label><input id="bid'+i+'" class="numinput bid" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Bid" value="'+esc(d.bid)+'" '+(state.bidsFrozen?'disabled':'')+'></div><div class="field"><label for="actual'+i+'">Actual</label><input id="actual'+i+'" class="numinput actual" type="number" min="0" max="'+cards+'" step="1" inputmode="numeric" placeholder="Actual" value="'+esc(d.actual)+'" '+(!state.bidsFrozen?'disabled':'')+'></div></div><div class="result" id="result'+i+'"> '+(state.bidsFrozen?'Enter actual score':'Bid not frozen yet')+'</div></div>'}).join('');
+ if(state.method==='passfail'){document.querySelectorAll('.player').forEach((row,i)=>{const a=row.querySelector('.actual');const sel=document.createElement('select');sel.className='actual';sel.setAttribute('aria-label','Result for '+state.players[i].name);sel.innerHTML='<option value="">Select</option><option value="pass">Pass</option><option value="fail">Fail</option>';sel.value=state.draft[i].actual;sel.disabled=!state.bidsFrozen;a.replaceWith(sel);row.querySelector('label[for=actual'+i+']').textContent='Result';sel.addEventListener('change',()=>{syncDraftFromUI();preview(i);updateActualSum();saveDraftQuietly()})})}
  document.querySelectorAll('.player').forEach((row,i)=>row.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{syncDraftFromUI();preview(i);updateBidSum();updateActualSum(true);saveDraftQuietly()})));
  $('resetRound').textContent=state.bidsFrozen?'Reset Actuals':'Reset Round';
  updateBidSum();updateActualSum(false);state.players.forEach((_,i)=>preview(i));renderLeaderboard();
@@ -230,6 +233,7 @@ function updateBidSum(){
 }
 function updateActualSum(allowBeep=true){
  if(!state||!state.bidsFrozen||!currentRound())return;
+ if(state.method==='passfail'){const d=state.draft,p=d.filter(x=>x.actual==='pass').length,f=d.filter(x=>x.actual==='fail').length;$('actualStatusText').textContent='Pass / Fail • '+(p+f)+'/'+d.length+' entered';$('actualSum').textContent=p+' pass · '+f+' fail';$('actualSum').className='bid-sum '+(p+f===d.length?(feasible(d,currentRound().cards)?'ok':'warn'):'');return}
  const cards=currentRound().cards,values=state.draft.map(d=>d.actual),entered=values.filter(v=>v!==''&&validValue(v)&&Number(v)<=cards),sum=entered.reduce((n,v)=>n+Number(v),0),complete=entered.length===state.players.length,invalidField=values.some(v=>v!==''&&(!validValue(v)||Number(v)>cards));
  const invalid=invalidField||sum>cards||(complete&&sum!==cards);$('actualStatus').classList.remove('hidden');$('actualSum').textContent=sum+' / '+cards;$('actualSum').className='bid-sum '+(complete&&sum===cards?'ok':invalid?'warn':'');
  if(invalidField){$('actualStatusText').textContent='ERROR: each actual score must be a whole number from 0 to '+cards;}
@@ -243,6 +247,7 @@ function validValue(v){return String(v).trim()!==''&&Number.isInteger(Number(v))
 function preview(i){
  const row=document.querySelector('.player[data-i="'+i+'"]');if(!row)return;const b=state.draft[i]?.bid??'',a=state.draft[i]?.actual??'',out=$('result'+i),score=$('rs'+i);
  if(!state.bidsFrozen){out.className='result';out.textContent='Bid not frozen yet';score.textContent='—';return}
+ if(state.method==='passfail'&&a!==''){const points=a==='pass'?10+11*Number(b):0;out.className='result '+(points?'success':'fail');out.textContent=points?'Pass':'Fail';score.textContent='+'+points;return}
  if(a===''){out.className='result';out.textContent='Enter actual score';score.textContent='—';return}
  if(!validValue(a)||Number(a)>currentRound().cards){out.className='result fail';out.textContent='Actual must be 0 to '+currentRound().cards;score.textContent='—';return}
  const points=Number(b)===Number(a)?10+Number(a)*11:0;out.className='result '+(points?'success':'fail');out.textContent=points?'✓ Match • +'+points+' points':'✕ No match • 0 points';score.textContent='+'+points;
@@ -258,9 +263,9 @@ $('editNamesBtn').addEventListener('click',()=>{syncDraftFromUI();save();renderE
 $('cancelEditNames').addEventListener('click',()=>{renderGame();show('game')});
 $('saveEditedNames').addEventListener('click',()=>{const names=[...$('gameNameInputs').querySelectorAll('input')].map((x,i)=>x.value.trim()||'Player '+(i+1));names.forEach((name,i)=>state.players[i].name=name);addNamesToSaved(names);save();renderGame();show('game');alert('Player names saved. All existing scores are unchanged.');});
 $('roundScoresBtn').addEventListener('click',()=>{syncDraftFromUI();save();renderRoundScorecard();show('roundScoresScreen')});
-$('closeRoundScores').addEventListener('click',()=>{renderGame();show('game')});
+$('closeRoundScores').addEventListener('click',()=>{if(state.completed){show('final')}else{renderGame();show('game')}});
 $('playerHistoryBtn').addEventListener('click',()=>{syncDraftFromUI();save();renderPlayerHistorySelect();show('playerHistoryScreen')});
-$('closePlayerHistory').addEventListener('click',()=>{renderGame();show('game')});
+$('closePlayerHistory').addEventListener('click',()=>{if(state.completed)show('final');else{renderGame();show('game')}});
 $('playerHistorySelect').addEventListener('change',renderSelectedPlayerHistory);
 $('shareWhatsApp').addEventListener('click',()=>{const text=buildShareText();window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank')});
 $('copyResults').addEventListener('click',async()=>{const text=buildShareText();try{await navigator.clipboard.writeText(text);alert('Results copied. You can paste them into WhatsApp.')}catch(e){const area=document.createElement('textarea');area.value=text;document.body.appendChild(area);area.select();try{document.execCommand('copy');alert('Results copied. You can paste them into WhatsApp.')}catch(err){alert('Copy was blocked. Please select and copy the results shown above.')}area.remove()}});
@@ -271,12 +276,12 @@ function renderRoundScorecard(){
  let html='<table><thead><tr><th>Round</th><th>Cards</th>'+players.map(p=>'<th>'+esc(p.name)+' (pts)</th>').join('')+'</tr></thead><tbody>';
  rounds.forEach(r=>{
   html+='<tr><td>'+r.round+'</td><td>'+r.cards+(r.blind?' Blind':'')+'</td>';
-  players.forEach((p,pi)=>{const e=r.entries[pi]||{};html+='<td>'+(e.points??0)+' <small>('+ (e.bid??'—') + '/' + (e.actual??'—') + ')</small></td>'});
+  players.forEach((p,pi)=>{const e=r.entries[pi]||{};html+='<td>'+(e.points??0)+' <small>('+ (e.bid??'—') + '/' + (e.result??e.actual??'—') + ')</small></td>'});
   html+='</tr>';
  });
  if(!rounds.length)html+='<tr><td colspan="'+(players.length+2)+'">No rounds completed yet.</td></tr>';
  html+='<tr><th>Total</th><th>—</th>'+players.map(p=>'<th>'+p.total+'</th>').join('')+'</tr></tbody></table>';
- $('roundScoresTable').innerHTML=html;
+ $('roundScoresTable').innerHTML=html;$('editPreviousArea').innerHTML=!state.completed&&state.round>0?'<button class="secondary" id="editPrev">Edit round '+state.round+'</button>':'';if($('editPrev'))$('editPrev').onclick=editPrevious;
 }
 function renderPlayerHistorySelect(){const names=[...new Set(loadHistory().flatMap(g=>g.players.map(p=>p.name)).concat(state?state.players.map(p=>p.name):[]))].sort((a,b)=>a.localeCompare(b));$('playerHistorySelect').innerHTML=names.length?names.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join(''):'<option value="">No players yet</option>';renderSelectedPlayerHistory()}
 function renderSelectedPlayerHistory(){const name=$('playerHistorySelect').value;if(!name){$('playerHistoryResults').innerHTML='<p class="notice">Complete a game to start building player history.</p>';return}const games=loadHistory(),records=[];games.forEach(g=>{const player=g.players.find(p=>p.name===name);if(player){const rank=sortedPlayers(g.players).findIndex(p=>p.name===name)+1;records.push({g,player,rank})}});const wins=records.filter(r=>r.rank===1).length,seconds=records.filter(r=>r.rank===2).length,thirds=records.filter(r=>r.rank===3).length,avg=records.length?Math.round(records.reduce((s,r)=>s+r.player.total,0)/records.length):0,best=records.length?Math.max(...records.map(r=>r.player.total)):0;let html='<div class="card"><strong>'+esc(name)+'</strong><p class="notice">Games: '+records.length+' • 🥇 Wins: '+wins+' • 🥈 2nd: '+seconds+' • 🥉 3rd: '+thirds+'<br>Average score: '+avg+' • Best score: '+best+'</p></div>';if(!records.length)html+='<p class="notice">No completed games found for this name yet. Game history is stored on this device/browser.</p>';else html+='<div class="table-wrap"><table><thead><tr><th>Game</th><th>Date</th><th>Place</th><th>Score</th></tr></thead><tbody>'+records.map(r=>'<tr><td>'+esc(r.g.name||'Unnamed game')+'</td><td>'+esc(dateText(r.g.completedAt||r.g.createdAt))+'</td><td>'+(['🥇','🥈','🥉'][r.rank-1]||r.rank)+'</td><td>'+r.player.total+'</td></tr>').join('')+'</tbody></table></div>';$('playerHistoryResults').innerHTML=html}
@@ -293,9 +298,8 @@ $('unfreezeBidsBottom').addEventListener('click',unfreezeBids);
 $('saveRound').addEventListener('click',()=>{
  if(!state.bidsFrozen){alert('Freeze the bids and trump before entering/saving actual scores.');return}
  syncDraftFromUI();const cards=currentRound().cards,entries=[];
- let actualTotal=0;for(let i=0;i<state.players.length;i++){const d=state.draft[i],a=d.actual;if(a===''||!validValue(a)||Number(a)>cards){beep();alert('Feeding error: enter a whole-number ACTUAL score from 0 to '+cards+' for '+state.players[i].name+'.');return}actualTotal+=Number(a);const points=Number(d.bid)===Number(a)?10+Number(a)*11:0;entries.push({bid:Number(d.bid),actual:Number(a),points})}
- if(actualTotal!==cards){beep();actualWarningActive=true;$('actualStatus').classList.remove('hidden');$('actualStatusText').textContent='ERROR: actual tricks total '+actualTotal+'; required total is '+cards;$('actualSum').textContent=actualTotal+' / '+cards;$('actualSum').className='bid-sum warn';alert('FEEDING ERROR — Round '+(state.round+1)+': actual tricks total '+actualTotal+', but exactly '+cards+' tricks must be distributed. Please correct the entries before saving.');return}
- state.rounds.push({round:state.round+1,cards,blind:currentRound().blind,direction:currentRound().direction,trump:{...state.trump},entries});
+ const result=validatedEntries(state.draft,cards,state.method);if(!result){beep();alert('Invalid results. Enter every result. Actual tricks must total '+cards+'; Pass/Fail must include at least one fail and be mathematically possible.');return}entries.push(...result);
+ state.rounds.push({round:state.round+1,cards,blind:currentRound().blind,direction:currentRound().direction,method:state.method||'actual',trump:{...state.trump},entries});
  entries.forEach((e,i)=>{state.players[i].total+=e.points;if(e.points>0)state.players[i].success++});
  state.round++;state.bidsFrozen=false;state.draft=makeDraft();
  if(state.round<state.schedule.length)randomTrump();else{finishGame();return}
@@ -331,7 +335,7 @@ function openHistoryDetail(id){
  history=loadHistory();const g=history.find(x=>x.id===id);if(!g){alert('This game was not found in history.');openHistory();return}
  detailGameId=id;$('detailShareWhatsApp').onclick=()=>shareHistoryGame(id);$('detailCopyResults').onclick=()=>copyHistoryGame(id);$('detailTitle').textContent=g.name||'Unnamed game';$('detailMeta').textContent=dateText(g.completedAt||g.createdAt)+' • '+g.players.length+' players • '+g.rounds.length+' rounds';$('detailLeaderboard').innerHTML=leaderboardHTML(g.players);
  const names=g.players.map(p=>p.name);
- $('roundDetails').innerHTML='<table><thead><tr><th>Round</th><th>Cards</th><th>Type</th><th>Trump</th>'+names.map(n=>'<th>'+esc(n)+' (B/A/P)</th>').join('')+'</tr></thead><tbody>'+g.rounds.map((r,ri)=>'<tr><td>'+(ri+1)+'</td><td>'+r.cards+'</td><td>'+(r.blind?'Blind':r.direction==='down'?'Descending':'Ascending')+'</td><td>'+esc(SUITS[r.trump.suit].name)+'</td>'+r.entries.map(e=>'<td>'+e.bid+'/'+e.actual+'/'+e.points+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+ $('roundDetails').innerHTML='<table><thead><tr><th>Round</th><th>Cards</th><th>Type</th><th>Trump</th>'+names.map(n=>'<th>'+esc(n)+' (B/A/P)</th>').join('')+'</tr></thead><tbody>'+g.rounds.map((r,ri)=>'<tr><td>'+(ri+1)+'</td><td>'+r.cards+'</td><td>'+(r.blind?'Blind':r.direction==='down'?'Descending':'Ascending')+'</td><td>'+esc(SUITS[r.trump.suit].name)+'</td>'+r.entries.map(e=>'<td>'+e.bid+'/'+(e.result??e.actual??'—')+'/'+e.points+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
  show('historyDetail');
 }
 function refreshSetup(){
@@ -380,6 +384,14 @@ $('backupFileInput').addEventListener('change',async ev=>{
  }catch(err){alert('Could not restore this backup: '+(err.message||'Invalid file'));$('backupMessage').textContent='Restore failed. Your existing records were not intentionally changed if the file was invalid.'}
  finally{ev.target.value=''}
 });
+
+
+function feasible(d,c){if(!d.every(x=>['pass','fail'].includes(x.actual))||!d.some(x=>x.actual==='fail'))return false;let sums=new Set([0]);for(const x of d){let next=new Set();for(const n of sums)for(let k=0;k<=c;k++)if((x.actual==='pass'?k===Number(x.bid):k!==Number(x.bid))&&n+k<=c)next.add(n+k);sums=next}return sums.has(c)}
+function validatedEntries(d,c,method){if(!d.every(x=>validValue(x.bid)&&Number(x.bid)<=c)||d.reduce((n,x)=>n+Number(x.bid),0)===c)return null;if(method==='passfail'){if(!feasible(d,c))return null;return d.map(x=>({bid:Number(x.bid),actual:x.actual==='pass'?Number(x.bid):null,result:x.actual,points:x.actual==='pass'?10+11*Number(x.bid):0}))}if(!d.every(x=>validValue(x.actual)&&Number(x.actual)<=c)||d.reduce((n,x)=>n+Number(x.actual),0)!==c)return null;return d.map(x=>({bid:Number(x.bid),actual:Number(x.actual),points:Number(x.bid)===Number(x.actual)?10+11*Number(x.bid):0}))}
+function editPrevious(){if(!state||state.completed||state.round<1)return;const index=state.round-1,r=state.rounds[index],method=r.method||'actual',area=$('editPreviousArea');area.innerHTML='<h3>Edit round '+r.round+'</h3><label>Trump <select id="prevTrump">'+SUITS.map((s,i)=>'<option value="'+i+'" '+(i===r.trump.suit?'selected':'')+'>'+esc(s.name)+'</option>').join('')+'</select></label>'+r.entries.map((e,i)=>'<div class="actions"><strong>'+esc(state.players[i].name)+'</strong><input aria-label="Bid" class="prevBid" type="number" min="0" max="'+r.cards+'" value="'+e.bid+'">'+(method==='passfail'?'<select class="prevActual"><option value="pass" '+(e.result==='pass'?'selected':'')+'>Pass</option><option value="fail" '+(e.result==='fail'?'selected':'')+'>Fail</option></select>':'<input aria-label="Actual" class="prevActual" type="number" min="0" max="'+r.cards+'" value="'+e.actual+'">')+'</div>').join('')+'<div class="actions"><button id="prevSave" class="primary">Save correction</button><button id="prevCancel" class="secondary">Cancel</button></div>'; $('prevCancel').onclick=renderRoundScorecard;$('prevSave').onclick=()=>{if(state.completed||state.round-1!==index||state.rounds[index]!==r)return;const d=[...area.querySelectorAll('.prevBid')].map((b,i)=>({bid:b.value,actual:area.querySelectorAll('.prevActual')[i].value})),entries=validatedEntries(d,r.cards,method);if(!entries){beep();alert('Invalid bids or results. Correct the entries.');return}r.entries=entries;r.trump.suit=Number($('prevTrump').value);state.players.forEach((p,i)=>{p.total=state.rounds.reduce((n,q)=>n+q.entries[i].points,0);p.success=state.rounds.filter(q=>q.entries[i].points>0).length});save();renderRoundScorecard()}}
+$('liveBtn').onclick=()=>{syncDraftFromUI();save();renderLeaderboard();show('liveScreen')};$('liveBack').onclick=()=>{renderGame();show('game')};$('finalRounds').onclick=()=>{renderRoundScorecard();show('roundScoresScreen')};$('finalPlayers').onclick=()=>{renderPlayerHistorySelect();show('playerHistoryScreen')};
+function printReport(g){const report=document.createElement('div');report.id='printReport';let totals=g.players.map(()=>0);report.innerHTML='<h1>Judgement — '+esc(g.name||'Game results')+'</h1><p>'+esc(dateText(g.completedAt||g.createdAt))+'</p><h2>Final ranking</h2>'+sortedPlayers(g.players).map((p,i)=>'<p>'+(i+1)+'. '+esc(p.name)+' — '+p.total+' points</p>').join('')+g.rounds.map(r=>'<section><h3>Round '+r.round+' · '+r.cards+' cards · '+esc(SUITS[r.trump.suit].name)+'</h3><table><tr><th>Player</th><th>Bid</th><th>Result</th><th>Points</th><th>Total</th></tr>'+r.entries.map((e,i)=>'<tr><td>'+esc(g.players[i].name)+'</td><td>'+e.bid+'</td><td>'+esc(e.result??e.actual)+'</td><td>'+e.points+'</td><td>'+(totals[i]+=e.points)+'</td></tr>').join('')+'</table></section>').join('');document.body.append(report);window.print();report.remove()}
+$('finalPDF').onclick=()=>printReport(state);const pdf=document.createElement('button');pdf.className='secondary';pdf.textContent='Print / Save PDF';pdf.onclick=()=>{const g=getHistoryGame(detailGameId);if(g)printReport(g)};$('detailCopyResults').after(pdf);
 
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 if(!window.matchMedia('(display-mode: standalone)').matches&&/iPhone|iPad|iPod/.test(navigator.userAgent)){$('saveStatus').textContent='Local save'}
